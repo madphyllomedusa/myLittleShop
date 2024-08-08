@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import lombok.Data;
+import java.math.BigDecimal;
 
 @Data
 @Entity
@@ -22,4 +23,6 @@ public class Product {
 
     @Column(nullable = false)
     private String productDescription;
+
+    private BigDecimal price;
 }

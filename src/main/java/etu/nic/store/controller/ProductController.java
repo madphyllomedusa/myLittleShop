@@ -19,7 +19,7 @@ public class ProductController {
         return productsService.findAllProducts();
     }
 
-    @PostMapping("save_product")
+    @PostMapping()
     public Product saveProduct(@RequestBody Product products) {
         return productsService.saveProduct(products);
     }
@@ -29,12 +29,12 @@ public class ProductController {
         return productsService.findProductById(id);
     }
 
-    @PutMapping("update_product")
+    @PutMapping()
     public Product updateProduct(Product products) {
         return productsService.updateProduct(products);
     }
 
-    @DeleteMapping("delete_product/{id}")
+    @DeleteMapping()
     public void deleteProductById(@PathVariable long id) {
         productsService.deleteProduct(id);
     }
