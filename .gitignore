@@ -16,7 +16,7 @@ tasks.xml
 *.ipr
 *.xml
 
-/target/
+/target/classes/
 HELP.md
 mvnw.cmd
 mvnw
