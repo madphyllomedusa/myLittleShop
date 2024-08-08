@@ -36,10 +36,11 @@ build/
 
 ### VS Code ###
 .vscode/
-/target/
-HELP.md
-mvnw.cmd
-mvnw
 .gitattributes
 ### Mac OS ###
 .DS_Store
+
+/target/
+.HELP.md
+.mvnw.cmd
+.mvnw
