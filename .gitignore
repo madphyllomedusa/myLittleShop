@@ -8,12 +8,18 @@ target/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+.idea/.gitignore
 workspace.xml
 tasks.xml
 *.iws
 *.iml
 *.ipr
 *.xml
+
+/target/
+HELP.md
+mvnw.cmd
+mvnw
 
 ### Eclipse ###
 .apt_generated
@@ -39,8 +45,3 @@ build/
 .gitattributes
 ### Mac OS ###
 .DS_Store
-
-/target/
-.HELP.md
-.mvnw.cmd
-.mvnw
