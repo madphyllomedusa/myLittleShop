@@ -1,5 +1,7 @@
 package etu.nic.store.service.Impl;
 
+import etu.nic.store.model.dto.ProductCreateDTO;
+import etu.nic.store.model.dto.ProductDTO;
 import etu.nic.store.model.Product;
 import etu.nic.store.repository.ProductRepository;
 import etu.nic.store.service.ProductService;
@@ -8,8 +10,9 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
-
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -20,30 +23,54 @@ public class ProductServiceDBImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override
-    public List<Product> findAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDTO> findAllProducts() {
+        return productRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Product findProductById(long id) {
-        return productRepository.findById(id);
+    public ProductDTO findProductById(long id) {
+        Optional<Product> productOpt = productRepository.findById(id);
+        return productOpt.map(this::convertToDTO).orElse(null);
     }
 
     @Override
-    public Product saveProduct(Product product) {
-        logger.info("Product saved: " + product.toString());
-        return productRepository.save(product);
+    public ProductDTO saveProduct(ProductCreateDTO productCreateDTO) {
+        Product product = convertToEntity(productCreateDTO);
+        Product savedProduct = productRepository.save(product);
+        logger.info("Product saved: " + savedProduct.toString());
+        return convertToDTO(savedProduct);
     }
 
     @Override
-    public Product updateProduct(Product product) {
-        logger.info("Product updated: " + product.toString());
-        return productRepository.save(product);
+    public ProductDTO updateProduct(long id, ProductCreateDTO productCreateDTO) {
+        Product product = convertToEntity(productCreateDTO);
+        product.setId(id);
+        Product updatedProduct = productRepository.save(product);
+        logger.info("Product updated: " + updatedProduct.toString());
+        return convertToDTO(updatedProduct);
     }
 
     @Override
     public void deleteProduct(long id) {
-
         productRepository.deleteById(id);
+    }
+
+    private ProductDTO convertToDTO(Product product) {
+        ProductDTO dto = new ProductDTO();
+        dto.setId(product.getId());
+        dto.setProductName(product.getProductName());
+        dto.setProductDescription(product.getProductDescription());
+        dto.setPrice(product.getPrice());
+        return dto;
+    }
+
+    private Product convertToEntity(ProductCreateDTO dto) {
+        Product product = new Product();
+        product.setProductName(dto.getProductName());
+        product.setProductDescription(dto.getProductDescription());
+        product.setPrice(dto.getPrice());
+        return product;
     }
 }

@@ -1,13 +1,15 @@
 package etu.nic.store.service;
 
-import etu.nic.store.model.Product;
+import etu.nic.store.model.dto.ProductCreateDTO;
+import etu.nic.store.model.dto.ProductDTO;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductService {
-    List<Product> findAllProducts();
-    Product findProductById(long id);
-    Product saveProduct(Product product);
-    Product updateProduct(Product product);
+    List<ProductDTO> findAllProducts();
+    ProductDTO findProductById(long id);
+    ProductDTO saveProduct(ProductCreateDTO productCreateDTO);
+    ProductDTO updateProduct(long id, ProductCreateDTO productCreateDTO);
     void deleteProduct(long id);
 }

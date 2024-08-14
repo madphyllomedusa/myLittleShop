@@ -1,6 +1,8 @@
 package etu.nic.store.controller;
 
 import etu.nic.store.model.Product;
+import etu.nic.store.model.dto.ProductCreateDTO;
+import etu.nic.store.model.dto.ProductDTO;
 import etu.nic.store.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,37 +15,36 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/products")
 @AllArgsConstructor
-
 public class ProductController {
-    private final ProductService productsService;
+    private final ProductService productService;
 
     @GetMapping()
-    public ResponseEntity<List<Product>> findAllProducts() {
+    public ResponseEntity<List<ProductDTO>> findAllProducts() {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(productsService.findAllProducts());
+                .body(productService.findAllProducts());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> findProductById(@PathVariable long id) {
+    public ResponseEntity<ProductDTO> findProductById(@PathVariable long id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(productsService.findProductById(id));
+                .body(productService.findProductById(id));
     }
 
     @PostMapping()
-    public ResponseEntity<Product> saveProduct(@RequestBody Product product) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productsService.saveProduct(product));
+    public ResponseEntity<ProductDTO> saveProduct(@RequestBody ProductCreateDTO productCreateDTO) {
+        ProductDTO savedProduct = productService.saveProduct(productCreateDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
     @PutMapping()
-    public ResponseEntity<Product> updateProduct(@RequestBody Product product) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(productsService.updateProduct(product));
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable long id, @RequestBody ProductCreateDTO productCreateDTO) {
+        ProductDTO updatedProduct = productService.updateProduct(id, productCreateDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProductById(@PathVariable long id) {
-        productsService.deleteProduct(id);
+        productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
 }
