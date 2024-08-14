@@ -3,6 +3,8 @@ package etu.nic.store.controller;
 import etu.nic.store.model.Product;
 import etu.nic.store.service.ProductService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,19 +17,34 @@ public class ProductController {
     private final ProductService productsService;
 
     @GetMapping()
-    public List<Product> findAllProducts() {
-        return productsService.findAllProducts();
+    public ResponseEntity<List<Product>> findAllProducts() {
+        return ResponseEntity.ok()
+                .body(productsService.findAllProducts());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> findProductById(@PathVariable long id) {
+        return ResponseEntity.ok()
+                .body(productsService.findProductById(id));
+    }
+
+
+//    @GetMapping()
+//    public List<Product> findAllProducts() {
+//        return productsService.findAllProducts();
+//    }
+
+//    @GetMapping("/{id}")
+//    public Product findProductById(@PathVariable long id) {
+//        return productsService.findProductById(id);
+//    }
 
     @PostMapping()
     public Product saveProduct(@RequestBody Product products) {
         return productsService.saveProduct(products);
     }
 
-    @GetMapping("/{id}")
-    public Product findProductById(@PathVariable long id) {
-        return productsService.findProductById(id);
-    }
+
 
     @PutMapping()
     public Product updateProduct(Product products) {

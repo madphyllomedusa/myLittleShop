@@ -8,12 +8,14 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 
 @Service
 @AllArgsConstructor
 @Primary
 public class ProductServiceDBImpl implements ProductService {
+    private static Logger logger = Logger.getLogger(ProductServiceDBImpl.class.getName());
 
     private final ProductRepository productRepository;
 
@@ -29,16 +31,19 @@ public class ProductServiceDBImpl implements ProductService {
 
     @Override
     public Product saveProduct(Product product) {
+        logger.info("Product saved: " + product.toString());
         return productRepository.save(product);
     }
 
     @Override
     public Product updateProduct(Product product) {
+        logger.info("Product updated: " + product.toString());
         return productRepository.save(product);
     }
 
     @Override
     public void deleteProduct(long id) {
+
         productRepository.deleteById(id);
     }
 }
