@@ -13,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -28,14 +27,15 @@ public class ProductServiceDBImpl implements ProductService {
 
     @Override
     public List<ProductDTO> findAllProducts() {
-        return productRepository.findAllByDeletedFalse().stream()
+        return productRepository.findAllByDeletedTimeIsNull()
+                .stream()
                 .map(productMapper.INSTANCE::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public ProductDTO findProductById(long id) {
-        return productRepository.findByIdAndDeletedFalse(id)
+        return productRepository.findByIdAndDeletedTimeIsNull(id)
                 .map(productMapper.INSTANCE::toDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
@@ -50,6 +50,7 @@ public class ProductServiceDBImpl implements ProductService {
             logger.info("Received: " + productDTO);
             logger.info("Entity: "+productMapper.toEntity(productDTO));
             Product savedProduct = productRepository.save(productMapper.toEntity(productDTO));
+
             logger.info("Product saved: " + savedProduct.toString());
             return productMapper.toDto(savedProduct);
         } catch (Exception e) {
@@ -79,7 +80,7 @@ public class ProductServiceDBImpl implements ProductService {
 
     @Override
     public void deleteProduct(long id) {
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findByIdAndDeletedTimeIsNull(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
         product.setDeletedTime(LocalDateTime.now());  // Мягкое удаление
         productRepository.save(product);
