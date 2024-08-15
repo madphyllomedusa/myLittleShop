@@ -3,6 +3,7 @@ package etu.nic.store.model.dto;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 public class ProductDTO {
@@ -10,5 +11,5 @@ public class ProductDTO {
     private String productName;
     private String productDescription;
     private BigDecimal price;
-    private boolean deleted;
+    private LocalDateTime deletedTime;
 }

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -80,7 +81,7 @@ public class ProductServiceDBImpl implements ProductService {
     public void deleteProduct(long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        product.setDeleted(true);  // Мягкое удаление
+        product.setDeletedTime(LocalDateTime.now());  // Мягкое удаление
         productRepository.save(product);
         logger.info("Product softly deleted: " + product.toString());
     }

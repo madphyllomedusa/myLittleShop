@@ -7,8 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "products")
@@ -28,5 +30,6 @@ public class Product {
     private BigDecimal price;
 
     @Column(nullable = false)
-    private boolean deleted; // time
+    @UpdateTimestamp
+    private LocalDateTime deletedTime; // time
 }
