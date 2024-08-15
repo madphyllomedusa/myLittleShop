@@ -28,22 +28,27 @@ public class ProductServiceDBImpl implements ProductService {
     @Override
     public List<ProductDTO> findAllProducts() {
         return productRepository.findAllByDeletedFalse().stream()
-                .map(productMapper::toDto)
+                .map(productMapper.INSTANCE::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public ProductDTO findProductById(long id) {
         return productRepository.findByIdAndDeletedFalse(id)
-                .map(productMapper::toDto)
+                .map(productMapper.INSTANCE::toDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
 
     @Override
     public ProductDTO saveProduct(ProductDTO productDTO) {
+        if (productDTO.getPrice() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Price cannot be null");
+        }
+
         try {
-            Product product = productMapper.toEntity(productDTO);
-            Product savedProduct = productRepository.save(product);
+            logger.info("Recived: " + productDTO);
+            logger.info("Entity: "+productMapper.toEntity(productDTO));
+            Product savedProduct = productRepository.save(productMapper.toEntity(productDTO));
             logger.info("Product saved: " + savedProduct.toString());
             return productMapper.toDto(savedProduct);
         } catch (Exception e) {
@@ -51,6 +56,7 @@ public class ProductServiceDBImpl implements ProductService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save product");
         }
     }
+
 
     @Override
     public ProductDTO updateProduct(long id, ProductDTO productCreateDTO) {

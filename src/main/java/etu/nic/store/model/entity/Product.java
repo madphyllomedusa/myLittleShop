@@ -5,9 +5,9 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
-@Data
 @Entity
 @Table(name = "products")
+@Data
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,5 +23,5 @@ public class Product {
     private BigDecimal price;
 
     @Column(nullable = false)
-    private boolean deleted = false;
+    private boolean deleted;
 }

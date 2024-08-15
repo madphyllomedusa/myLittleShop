@@ -20,15 +20,24 @@
     <dependencies>
 
         <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version> <!-- Проверьте последнюю доступную версию -->
+        </dependency>
+
+        <!-- MapStruct -->
+        <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>1.5.5.Final</version>
+            <version>1.5.3.Final</version> <!-- Проверьте последнюю доступную версию -->
         </dependency>
+
 
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
-            <version>1.5.1.Final</version>
+            <version>1.5.3.Final</version> <!-- Проверьте последнюю доступную версию -->
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
