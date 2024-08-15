@@ -29,7 +29,5 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(nullable = false)
-    @UpdateTimestamp
-    private LocalDateTime deletedTime; // time
+    private LocalDateTime deletedTime;
 }

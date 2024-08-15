@@ -20,56 +20,31 @@ public class ProductController {
 
     @GetMapping("/")
     public ResponseEntity<List<ProductDTO>> findAllProducts() {
-        try {
-            List<ProductDTO> products = productService.findAllProducts();
-            return ResponseEntity.ok(products);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
-        }
+        List<ProductDTO> products = productService.findAllProducts();
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> findProductById(@PathVariable long id) {
-        try {
-            ProductDTO product = productService.findProductById(id);
-            return ResponseEntity.ok(product);
-        } catch (ResponseStatusException ex) {
-            return ResponseEntity.status(ex.getStatusCode()).body(null);
-        }
+        ProductDTO product = productService.findProductById(id);
+        return ResponseEntity.ok(product);
     }
 
     @PostMapping()
     public ResponseEntity<ProductDTO> saveProduct(@Valid @RequestBody ProductDTO productDTO) {
-        try {
-            ProductDTO savedProduct = productService.saveProduct(productDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
-        } catch (ResponseStatusException ex) {
-            return ResponseEntity.status(ex.getStatusCode()).body(productDTO);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(productDTO);
-        }
+        ProductDTO savedProduct = productService.saveProduct(productDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable long id, @Valid @RequestBody ProductDTO productDTO) {
-        try {
-            ProductDTO updatedProduct = productService.updateProduct(id, productDTO);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
-        } catch (ResponseStatusException ex) {
-            return ResponseEntity.status(ex.getStatusCode()).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        ProductDTO updatedProduct = productService.updateProduct(id, productDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProductById(@PathVariable long id) {
-        try {
-            productService.deleteProduct(id);
-            return ResponseEntity.noContent().build();
-        } catch (ResponseStatusException ex) {
-            return ResponseEntity.status(ex.getStatusCode()).build();
-        }
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 }
