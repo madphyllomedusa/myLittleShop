@@ -1,7 +1,5 @@
 package etu.nic.store.controller;
 
-import etu.nic.store.model.Product;
-import etu.nic.store.model.dto.ProductCreateDTO;
 import etu.nic.store.model.dto.ProductDTO;
 import etu.nic.store.service.ProductService;
 import lombok.AllArgsConstructor;
@@ -9,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -18,7 +15,7 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
-    @GetMapping()
+    @GetMapping("/")
     public ResponseEntity<List<ProductDTO>> findAllProducts() {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(productService.findAllProducts());
@@ -31,14 +28,14 @@ public class ProductController {
     }
 
     @PostMapping()
-    public ResponseEntity<ProductDTO> saveProduct(@RequestBody ProductCreateDTO productCreateDTO) {
-        ProductDTO savedProduct = productService.saveProduct(productCreateDTO);
+    public ResponseEntity<ProductDTO> saveProduct(@RequestBody ProductDTO productDTO) {
+        ProductDTO savedProduct = productService.saveProduct(productDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
     @PutMapping()
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable long id, @RequestBody ProductCreateDTO productCreateDTO) {
-        ProductDTO updatedProduct = productService.updateProduct(id, productCreateDTO);
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable long id, @RequestBody ProductDTO productDTO) {
+        ProductDTO updatedProduct = productService.updateProduct(id, productDTO);
         return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
     }
 

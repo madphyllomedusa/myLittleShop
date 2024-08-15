@@ -1,6 +1,5 @@
 package etu.nic.store.service.Impl;
 
-import etu.nic.store.model.dto.ProductCreateDTO;
 import etu.nic.store.model.dto.ProductDTO;
 import etu.nic.store.model.Product;
 import etu.nic.store.repository.ProductRepository;
@@ -36,15 +35,15 @@ public class ProductServiceDBImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO saveProduct(ProductCreateDTO productCreateDTO) {
-        Product product = convertToEntity(productCreateDTO);
+    public ProductDTO saveProduct(ProductDTO productDTO) {
+        Product product = convertToEntity(productDTO);
         Product savedProduct = productRepository.save(product);
         logger.info("Product saved: " + savedProduct.toString());
         return convertToDTO(savedProduct);
     }
 
     @Override
-    public ProductDTO updateProduct(long id, ProductCreateDTO productCreateDTO) {
+    public ProductDTO updateProduct(long id, ProductDTO productCreateDTO) {
         Product product = convertToEntity(productCreateDTO);
         product.setId(id);
         Product updatedProduct = productRepository.save(product);
@@ -66,7 +65,7 @@ public class ProductServiceDBImpl implements ProductService {
         return dto;
     }
 
-    private Product convertToEntity(ProductCreateDTO dto) {
+    private Product convertToEntity(ProductDTO dto) {
         Product product = new Product();
         product.setProductName(dto.getProductName());
         product.setProductDescription(dto.getProductDescription());
