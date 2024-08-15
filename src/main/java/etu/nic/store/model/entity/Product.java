@@ -1,4 +1,4 @@
-package etu.nic.store.model;
+package etu.nic.store.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,5 +19,9 @@ public class Product {
     @Column(nullable = false)
     private String productDescription;
 
+    @Column(nullable = false)
     private BigDecimal price;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 }

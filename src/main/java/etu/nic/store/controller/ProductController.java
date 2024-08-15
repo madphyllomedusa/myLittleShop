@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -13,35 +14,57 @@ import java.util.List;
 @RequestMapping("/api/v1/products")
 @AllArgsConstructor
 public class ProductController {
+
     private final ProductService productService;
 
     @GetMapping("/")
     public ResponseEntity<List<ProductDTO>> findAllProducts() {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(productService.findAllProducts());
+        try {
+            List<ProductDTO> products = productService.findAllProducts();
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> findProductById(@PathVariable long id) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(productService.findProductById(id));
+        try {
+            ProductDTO product = productService.findProductById(id);
+            return ResponseEntity.ok(product);
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode()).body(null);
+        }
     }
 
     @PostMapping()
     public ResponseEntity<ProductDTO> saveProduct(@RequestBody ProductDTO productDTO) {
-        ProductDTO savedProduct = productService.saveProduct(productDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
+        try {
+            ProductDTO savedProduct = productService.saveProduct(productDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode()).body(null);
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable long id, @RequestBody ProductDTO productDTO) {
-        ProductDTO updatedProduct = productService.updateProduct(id, productDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
+        try {
+            ProductDTO updatedProduct = productService.updateProduct(id, productDTO);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode()).body(null);
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProductById(@PathVariable long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.noContent().build();
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode()).build();
+        }
     }
 }
