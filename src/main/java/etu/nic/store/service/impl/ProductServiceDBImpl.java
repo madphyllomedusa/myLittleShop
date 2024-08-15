@@ -46,16 +46,17 @@ public class ProductServiceDBImpl implements ProductService {
         }
 
         try {
-            logger.info("Recived: " + productDTO);
+            logger.info("Received: " + productDTO);
             logger.info("Entity: "+productMapper.toEntity(productDTO));
             Product savedProduct = productRepository.save(productMapper.toEntity(productDTO));
             logger.info("Product saved: " + savedProduct.toString());
             return productMapper.toDto(savedProduct);
         } catch (Exception e) {
-            logger.severe("Failed to save product: " + e.getMessage());
+            logger.warning("Failed to save product: " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save product");
         }
     }
+
 
 
     @Override
@@ -83,4 +84,5 @@ public class ProductServiceDBImpl implements ProductService {
         productRepository.save(product);
         logger.info("Product softly deleted: " + product.toString());
     }
+
 }
