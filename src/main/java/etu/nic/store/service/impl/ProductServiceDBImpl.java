@@ -50,7 +50,7 @@ public class ProductServiceDBImpl implements ProductService {
             logger.info("Received: " + productDTO);
             logger.info("Entity: "+productMapper.toEntity(productDTO));
             Product savedProduct = productRepository.save(productMapper.toEntity(productDTO));
-
+            savedProduct.setDeletedTime(null);
             logger.info("Product saved: " + savedProduct.toString());
             return productMapper.toDto(savedProduct);
         } catch (Exception e) {
