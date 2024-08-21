@@ -1,14 +1,14 @@
 package etu.nic.store.service.impl;
 
+import etu.nic.store.dao.impl.ProductDAOImpl;
 import etu.nic.store.exceptionhandler.BadRequestException;
 import etu.nic.store.exceptionhandler.InternalServerErrorException;
 import etu.nic.store.exceptionhandler.NotFoundException;
 import etu.nic.store.model.dto.ProductDTO;
-import etu.nic.store.model.entity.Category;
+
 import etu.nic.store.model.entity.Product;
 import etu.nic.store.model.mappers.ProductMapper;
-import etu.nic.store.repository.CategoryRepository;
-import etu.nic.store.repository.ProductRepository;
+
 import etu.nic.store.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -27,70 +27,57 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
     private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
-    private final ProductRepository productRepository;
+    private final ProductDAOImpl productDAO;
     private final ProductMapper productMapper;
-    private final CategoryRepository categoryRepository;
+
 
     @Override
     public List<ProductDTO> findAllProducts() {
-        List<Product> products = productRepository.findAllByDeletedTimeIsNull();
-
+        List<Product> products = productDAO.findAllProducts();
         if (products.isEmpty()) {
             logger.warn("Product list is empty");
             throw new NotFoundException("Product list is empty");
         }
         return products.stream()
-                .map(productMapper.INSTANCE::toDTO)
+                .map(productMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ProductDTO findProductById(long id) {
-        if (id <= 0) {
-            logger.error("Invalid product ID: {}", id);
-            throw new BadRequestException("Invalid product ID");
+        public ProductDTO findProductById(Long id) {
+            if (id <= 0) {
+                logger.error("Invalid product ID: {}", id);
+                throw new BadRequestException("Invalid product ID");
+            }
+            return productDAO.findProductById(id)
+                    .map(productMapper::toDTO)
+                    .orElseThrow(() -> new NotFoundException("Product not found"));
         }
-        return productRepository.findByIdAndDeletedTimeIsNull(id)
-                .map(productMapper.INSTANCE::toDTO)
-                .orElseThrow(() -> new NotFoundException("Product not found"));
+    @Override
+    public ProductDTO saveProduct(ProductDTO productDTO) {
+            if (productDTO.getPrice().intValue() <= 0) {
+                logger.error("Input price unavailable: {}", productDTO.getPrice());
+                throw new BadRequestException("Price must be greater than zero");
+            }
+            logger.info("Received from client {}", productDTO);
+            Product product = productMapper.toEntity(productDTO);
+            product.setDeletedTime(null); // Не забываем обнулить время удаления
+
+            Product savedProduct = productDAO.save(product);
+            logger.info("Product saved: {}", savedProduct);
+            return productMapper.toDTO(savedProduct);
     }
 
     @Override
-    public ProductDTO saveProduct(ProductDTO productDTO) {
-        if (productDTO.getPrice().intValue() <= 0) {
-            logger.error("Input price unavailable : {}", productDTO.getPrice());
-            throw new BadRequestException("Price must be greater than null");
+    public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
+        if (productDAO.findProductById(id).isEmpty()) {
+            throw new NotFoundException("Product not found");
         }
 
         try {
             Product product = productMapper.toEntity(productDTO);
-            if (productDTO.getCategoryIds() != null && !productDTO.getCategoryIds().isEmpty()) {
-                Set<Category> categories = new HashSet<>(categoryRepository.findAllById(productDTO.getCategoryIds()));
-                product.setCategories(categories);
-            }
-            product.setDeletedTime(null);
-            Product savedProduct = productRepository.save(product);
-            logger.info("Product saved: {}", savedProduct);
-            return productMapper.toDTO(savedProduct);
-        } catch (Exception e) {
-            logger.error("Failed to save product: {}", e.getMessage());
-            throw new BadRequestException("Failed to save product");
-        }
-    }
-
-    @Override
-    public ProductDTO updateProduct(long id, ProductDTO productCreateDTO) {
-        if (!productRepository.existsById(id)) {
-            throw new NotFoundException("Product not found");
-        }
-        try {
-            Product product = productMapper.toEntity(productCreateDTO);
             product.setId(id);
-            if (productCreateDTO.getCategoryIds() != null && !productCreateDTO.getCategoryIds().isEmpty()) {
-                Set<Category> categories = new HashSet<>(categoryRepository.findAllById(productCreateDTO.getCategoryIds()));
-                product.setCategories(categories);
-            }
-            Product updatedProduct = productRepository.save(product);
+            Product updatedProduct = productDAO.update(product);
             logger.info("Product updated: {}", updatedProduct);
             return productMapper.toDTO(updatedProduct);
         } catch (Exception e) {
@@ -102,23 +89,22 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public void deleteProduct(long id) {
+    public void deleteProduct(Long id) {
         if (id <= 0) {
             logger.error("Invalid product ID: {}", id);
             throw new BadRequestException("Invalid product ID");
         }
 
-        Product product = productRepository.findById(id)
+        Product product = productDAO.findProductById(id)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
-        if (product.getDeletedTime() != null && productRepository.existsById(id) ) {
+        if (product.getDeletedTime() != null && productDAO.findProductByIdAndDeleted(id).isPresent()) {
             logger.warn("Product is already deleted, deleted time: {}", product.getDeletedTime());
             throw new NotFoundException("Product is already deleted");
         }
 
-        product.setDeletedTime(LocalDateTime.now());
-        productRepository.save(product);
-        logger.info("Product softly deleted: {}" , product);
+        productDAO.deleteById(id);
+        logger.info("Product softly deleted with ID: {}", id);
     }
 
 }

@@ -10,4 +10,5 @@ public class CategoryDTO {
     private String title;
     private String description;
     private Set<Long> productIDs;
+
 }

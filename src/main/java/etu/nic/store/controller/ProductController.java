@@ -5,6 +5,7 @@ import etu.nic.store.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,18 +31,21 @@ public class ProductController {
     }
 
     @PostMapping()
+    @Transactional
     public ResponseEntity<ProductDTO> saveProduct(@Valid @RequestBody ProductDTO productDTO) {
         ProductDTO savedProduct = productService.saveProduct(productDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable long id, @Valid @RequestBody ProductDTO productDTO) {
         ProductDTO updatedProduct = productService.updateProduct(id, productDTO);
         return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<Void> deleteProductById(@PathVariable long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
