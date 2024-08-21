@@ -39,8 +39,8 @@
 
         <dependency>
             <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-            <version>10.10.0</version>
+            <artifactId>flyway-maven-plugin</artifactId>
+            <version>10.17.1</version>
         </dependency>
 
         <dependency>
@@ -82,20 +82,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-maven-plugin</artifactId>
-                <version>10.10.0</version>
-                <configuration>
-                    <url>jdbc:postgresql://localhost:5432/store_db</url>
-                    <user>postgres</user>
-                    <password>123</password>
-                    <locations>
-                        <location>classpath:db/migration</location>
-                    </locations>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
