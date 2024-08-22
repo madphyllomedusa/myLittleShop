@@ -9,6 +9,8 @@ public interface ProductDAO {
     List<Product> findAllProducts();
     Optional<Product> findProductById(Long id);
     Optional<Product> findProductByIdAndDeleted(Long id);
+    void addCategoryToProduct(Long productId, Long categoryId);
+    void removeCategoryFromProduct(Long productId, Long categoryId);
     Product save(Product product);
     Product update(Product product);
     void deleteById(Long id);

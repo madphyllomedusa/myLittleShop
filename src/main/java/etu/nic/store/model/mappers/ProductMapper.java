@@ -1,18 +1,40 @@
 package etu.nic.store.model.mappers;
 
 import etu.nic.store.model.dto.ProductDTO;
+import etu.nic.store.model.entity.Category;
 import etu.nic.store.model.entity.Product;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Component
+public class ProductMapper {
 
-public interface ProductMapper {
-    ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
+    public Product toEntity(ProductDTO productDTO, Set<Category> categories) {
+        Product product = new Product();
+        product.setId(productDTO.getId());
+        product.setProductName(productDTO.getProductName());
+        product.setProductDescription(productDTO.getProductDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setDeletedTime(productDTO.getDeletedTime());
+        product.setCategories(categories);
+        return product;
+    }
 
-    ProductDTO toDTO(Product product);
-    Product toEntity(ProductDTO productDTO);
+    public ProductDTO toDTO(Product product) {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(product.getId());
+        productDTO.setProductName(product.getProductName());
+        productDTO.setProductDescription(product.getProductDescription());
+        productDTO.setPrice(product.getPrice());
+        productDTO.setDeletedTime(product.getDeletedTime());
+
+        Set<Long> categoryIds = product.getCategories().stream()
+                .map(Category::getId)
+                .collect(Collectors.toSet());
+        productDTO.setCategoryIds(categoryIds);
+
+        return productDTO;
+    }
 }
-

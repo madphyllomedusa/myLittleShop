@@ -1,6 +1,7 @@
 package etu.nic.store.dao.impl;
 
 import etu.nic.store.dao.ProductDAO;
+import etu.nic.store.model.entity.Category;
 import etu.nic.store.model.entity.Product;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -9,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,8 +45,20 @@ public class ProductDAOImpl implements ProductDAO {
         String sql = "INSERT INTO products (product_name, product_description, price, deleted_time) VALUES (?, ?, ?, ?) RETURNING id";
         Long id = jdbcTemplate.queryForObject(sql, Long.class, product.getProductName(), product.getProductDescription(), product.getPrice(), product.getDeletedTime());
         product.setId(id);
+
+        for (Category category : product.getCategories()) {
+            addCategoryToProduct(product.getId(), category.getId());
+        }
+
         return product;
     }
+
+    @Override
+    public void addCategoryToProduct(Long productId, Long categoryId) {
+        String sql = "INSERT INTO product_category (product_id, category_id) VALUES (?, ?)";
+        jdbcTemplate.update(sql, productId, categoryId);
+    }
+
 
     @Override
     public Product update(Product product) {
@@ -58,6 +72,14 @@ public class ProductDAOImpl implements ProductDAO {
         String sql = "UPDATE products SET deleted_time = NOW() WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+
+    @Override
+    public void removeCategoryFromProduct(Long productId, Long categoryId) {
+        String sql = "DELETE FROM product_category WHERE product_id = ? AND category_id = ?";
+        jdbcTemplate.update(sql, productId, categoryId);
+    }
+
 
     private Product mapRowToProduct(ResultSet rs, int rowNum) throws SQLException {
         Product product = new Product();

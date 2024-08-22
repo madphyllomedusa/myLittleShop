@@ -8,6 +8,7 @@ public interface CategoryService {
     CategoryDTO saveCategory(CategoryDTO categoryDTO);
     CategoryDTO findCategoryById(Long id);
     CategoryDTO findCategoryByTitle(String title);
+    CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO);
     List<CategoryDTO> findAllCategories();
     void deleteCategory(Long id);
 }

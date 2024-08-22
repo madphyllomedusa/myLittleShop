@@ -21,3 +21,4 @@ CREATE TABLE IF NOT EXISTS product_category (
                                                 CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
+

@@ -2,6 +2,7 @@ package etu.nic.store.dao.impl;
 
 import etu.nic.store.dao.CategoryDAO;
 import etu.nic.store.model.entity.Category;
+import etu.nic.store.model.entity.Product;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -42,8 +43,21 @@ public class CategoryDAOImpl implements CategoryDAO {
         String sql = "INSERT INTO categories (title, description) VALUES (?, ?) RETURNING id";
         Long id = jdbcTemplate.queryForObject(sql, Long.class, category.getTitle(), category.getDescription());
         category.setId(id);
+
+        // Сохранение связей с продуктами
+        for (Product product : category.getProducts()) {
+            addProductToCategory(category.getId(), product.getId());
+        }
+
         return category;
     }
+
+    @Override
+    public void addProductToCategory(Long categoryId, Long productId) {
+        String sql = "INSERT INTO product_category (category_id, product_id) VALUES (?, ?)";
+        jdbcTemplate.update(sql, categoryId, productId);
+    }
+
 
     @Override
     public Category update(Category category) {
@@ -52,10 +66,17 @@ public class CategoryDAOImpl implements CategoryDAO {
         return category;
 
     }
+    @Override
+    public void removeProductsFromCategory(Long categoryId) {
+        String sql = "DELETE FROM product_category WHERE category_id = ?";
+        jdbcTemplate.update(sql, categoryId);
+    }
+
 
     @Override
-    public void deleteById(Long id) {
-
+    public void deleteById(Long categoryId) {
+        String sql = "DELETE FROM categories WHERE category_id = ?";
+        jdbcTemplate.update(sql,categoryId);
     }
 
     private Category mapRowToCategory(ResultSet rs, int rowNum) throws SQLException {

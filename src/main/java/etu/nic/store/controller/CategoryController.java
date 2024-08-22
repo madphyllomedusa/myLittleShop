@@ -2,6 +2,7 @@ package etu.nic.store.controller;
 
 
 import etu.nic.store.model.dto.CategoryDTO;
+import etu.nic.store.model.dto.ProductDTO;
 import etu.nic.store.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -33,6 +35,13 @@ public class CategoryController {
     public ResponseEntity<CategoryDTO> getCategoryByTitle(@PathVariable String title) {
         CategoryDTO categories = categoryService.findCategoryByTitle(title);
         return ResponseEntity.ok(categories);
+    }
+
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryDTO categoryDTO){
+        CategoryDTO updatedCategory = categoryService.updateCategory(id, categoryDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedCategory);
     }
 
     @PostMapping()
