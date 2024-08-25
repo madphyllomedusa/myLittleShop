@@ -47,7 +47,7 @@ public class ProductServiceImpl implements ProductService {
             logger.error("Invalid product ID: {}", id);
             throw new BadRequestException("Invalid product ID");
         }
-        return productDAO.findProductById(id)
+        return productDAO.findById(id)
                 .map(productMapper::toDTO)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
     }
@@ -68,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
                     .collect(Collectors.toSet());
         }
 
-        Product product = productMapper.toEntity(productDTO, categories);
+        Product product = productMapper.toEntity(productDTO);
         product.setDeletedTime(null);
 
         Product savedProduct = productDAO.save(product);
@@ -79,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
-        if (productDAO.findProductById(id).isEmpty()) {
+        if (productDAO.findById(id).isEmpty()) {
             throw new NotFoundException("Product not found");
         }
 
@@ -89,7 +89,7 @@ public class ProductServiceImpl implements ProductService {
                             .orElseThrow(() -> new NotFoundException("Category not found")))
                     .collect(Collectors.toSet());
 
-            Product product = productMapper.toEntity(productDTO, categories);
+            Product product = productMapper.toEntity(productDTO);
             product.setId(id);
             Product updatedProduct = productDAO.update(product);
             logger.info("Product updated: {}", updatedProduct);
@@ -107,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
             throw new BadRequestException("Invalid product ID");
         }
 
-        Product product = productDAO.findProductById(id)
+        Product product = productDAO.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
         if (product.getDeletedTime() != null) {

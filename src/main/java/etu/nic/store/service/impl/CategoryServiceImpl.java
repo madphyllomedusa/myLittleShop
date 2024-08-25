@@ -39,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
         Set<Product> products = new HashSet<>();
         if (categoryDTO.getProductIDs() != null && !categoryDTO.getProductIDs().isEmpty()) {
             products = categoryDTO.getProductIDs().stream()
-                    .map(productId -> productDAO.findProductById(productId)
+                    .map(productId -> productDAO.findById(productId)
                             .orElseThrow(() -> new NotFoundException("Product not found")))
                     .collect(Collectors.toSet());
         }
@@ -87,7 +87,7 @@ public class CategoryServiceImpl implements CategoryService {
         Set<Product> products = new HashSet<>();
         if (categoryDTO.getProductIDs() != null && !categoryDTO.getProductIDs().isEmpty()) {
             products = categoryDTO.getProductIDs().stream()
-                    .map(productId -> productDAO.findProductById(productId)
+                    .map(productId -> productDAO.findById(productId)
                             .orElseThrow(() -> new NotFoundException("Product not found")))
                     .collect(Collectors.toSet());
         }
@@ -119,10 +119,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Long id) {
-        if (id <= 0) {
-            logger.error("Invalid category ID: {}", id);
-            throw new BadRequestException("Invalid category ID");
-        }
+        Category category = categoryDAO.findById(id)
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+
         categoryDAO.deleteById(id);
     }
 }

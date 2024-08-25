@@ -20,13 +20,13 @@ public class CategoryDAOImpl implements CategoryDAO {
 
     @Override
     public List<Category> findAll() {
-        String sql = "SELECT * FROM categories";
+        String sql = "SELECT * FROM categories WHERE deleted_time IS NULL";
         return jdbcTemplate.query(sql, this::mapRowToCategory);
     }
 
     @Override
     public Optional<Category> findById(Long id) {
-        String sql = "SELECT * FROM categories WHERE id = ?";
+        String sql = "SELECT * FROM categories WHERE id = ? AND deleted_time IS NULL";
         List<Category> categories = jdbcTemplate.query(sql, this::mapRowToCategory, id);
         return categories.stream().findFirst();
     }
@@ -40,17 +40,20 @@ public class CategoryDAOImpl implements CategoryDAO {
 
     @Override
     public Category save(Category category) {
-        String sql = "INSERT INTO categories (title, description) VALUES (?, ?) RETURNING id";
-        Long id = jdbcTemplate.queryForObject(sql, Long.class, category.getTitle(), category.getDescription());
+        String sql = "INSERT INTO categories (title, description, parent_id) VALUES (?, ?, ?) RETURNING id";
+        Long id = jdbcTemplate.queryForObject(sql,
+                Long.class,
+                category.getTitle(),
+                category.getDescription(),
+                category.getParentId());
         category.setId(id);
 
-        // Сохранение связей с продуктами
         for (Product product : category.getProducts()) {
             addProductToCategory(category.getId(), product.getId());
         }
-
         return category;
     }
+
 
     @Override
     public void addProductToCategory(Long categoryId, Long productId) {
@@ -61,11 +64,15 @@ public class CategoryDAOImpl implements CategoryDAO {
 
     @Override
     public Category update(Category category) {
-        String sql = "UPDATE categories SET title = ? description = ? WHERE id = ?";
-        jdbcTemplate.update(sql, category.getTitle(), category.getDescription(),category.getId());
+        String sql = "UPDATE categories SET title = ?, description = ?, parent_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql,
+                category.getTitle(),
+                category.getDescription(),
+                category.getParentId(),
+                category.getId());
         return category;
-
     }
+
     @Override
     public void removeProductsFromCategory(Long categoryId) {
         String sql = "DELETE FROM product_category WHERE category_id = ?";
@@ -74,16 +81,29 @@ public class CategoryDAOImpl implements CategoryDAO {
 
 
     @Override
-    public void deleteById(Long categoryId) {
-        String sql = "DELETE FROM categories WHERE category_id = ?";
-        jdbcTemplate.update(sql,categoryId);
+    public void deleteById(Long id) {
+        if (hasProducts(id)) {
+            throw new IllegalStateException("Cannot delete category with products");
+        }
+
+        String sql = "UPDATE categories SET deleted_time = NOW() WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
+
+    private boolean hasProducts(Long categoryId) {
+        String sql = "SELECT COUNT(*) FROM product_category WHERE category_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, categoryId);
+        return count != null && count > 0;
+    }
+
 
     private Category mapRowToCategory(ResultSet rs, int rowNum) throws SQLException {
         Category category = new Category();
         category.setId(rs.getLong("id"));
         category.setTitle(rs.getString("title"));
         category.setDescription(rs.getString("description"));
+        category.setParentId(rs.getLong("parent_id"));
+        category.setDeletedTime(rs.getTimestamp("deleted_time") != null ? rs.getTimestamp("deleted_time").toLocalDateTime() : null);
         return category;
     }
 }
