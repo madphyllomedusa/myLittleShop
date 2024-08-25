@@ -2,7 +2,6 @@ package etu.nic.store.controller;
 
 
 import etu.nic.store.model.dto.CategoryDTO;
-import etu.nic.store.model.dto.ProductDTO;
 import etu.nic.store.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
