@@ -5,7 +5,7 @@ import etu.nic.store.model.entity.Category;
 import java.util.List;
 import java.util.Optional;
 
-public interface CategoryDAO {
+public interface CategoryDao {
     List<Category> findAll();
     Optional<Category> findById(Long id);
     Optional<Category> findByTitle(String title);

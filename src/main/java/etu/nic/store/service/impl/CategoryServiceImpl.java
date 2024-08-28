@@ -1,10 +1,10 @@
 package etu.nic.store.service.impl;
 
-import etu.nic.store.dao.impl.CategoryDAOImpl;
-import etu.nic.store.dao.impl.ProductDAOImpl;
+import etu.nic.store.dao.impl.CategoryDaoImpl;
+import etu.nic.store.dao.impl.ProductDaoImpl;
 import etu.nic.store.exceptionhandler.BadRequestException;
 import etu.nic.store.exceptionhandler.NotFoundException;
-import etu.nic.store.model.dto.CategoryDTO;
+import etu.nic.store.model.dto.CategoryDto;
 import etu.nic.store.model.entity.Category;
 import etu.nic.store.model.entity.Product;
 import etu.nic.store.model.mappers.CategoryMapper;
@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -24,12 +25,13 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
-    private final CategoryDAOImpl categoryDAO;
-    private final ProductDAOImpl productDAO;
+    private final CategoryDaoImpl categoryDAO;
+    private final ProductDaoImpl productDAO;
     private final CategoryMapper categoryMapper;
 
     @Override
-    public CategoryDTO saveCategory(CategoryDTO categoryDTO) {
+    @Transactional
+    public CategoryDto saveCategory(CategoryDto categoryDTO) {
         if (categoryDTO == null) {
             logger.error("CategoryDTO is null");
             throw new BadRequestException("CategoryDTO is null");
@@ -44,14 +46,21 @@ public class CategoryServiceImpl implements CategoryService {
                     .collect(Collectors.toSet());
         }
 
-        Category savedCategory = categoryDAO.save(categoryMapper.toEntity(categoryDTO, products));
+        Category category = categoryMapper.toEntity(categoryDTO,products);
+        category.setProducts(products);
+
+        Category savedCategory = categoryDAO.save(category);
+        for (Product product : products) {
+            categoryDAO.addProductToCategory(savedCategory.getId(), product.getId());
+        }
+
         logger.info("Category saved successfully: {}", savedCategory);
         return categoryMapper.toDTO(savedCategory);
     }
 
 
     @Override
-    public CategoryDTO findCategoryById(Long id) {
+    public CategoryDto findCategoryById(Long id) {
         if (id <= 0) {
             logger.error("Invalid category ID: {}", id);
             throw new BadRequestException("Invalid category ID");
@@ -62,7 +71,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDTO findCategoryByTitle(String title) {
+    public CategoryDto findCategoryByTitle(String title) {
         if (title == null) {
             logger.error("Invalid category title: {}", title);
             throw new BadRequestException("Invalid category title");
@@ -73,7 +82,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
+    @Transactional
+    public CategoryDto updateCategory(Long id, CategoryDto categoryDTO) {
         if (id == null || id <= 0) {
             logger.error("Invalid category ID: {}", id);
             throw new BadRequestException("Invalid category ID");
@@ -106,7 +116,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
-    public List<CategoryDTO> findAllCategories() {
+    public List<CategoryDto> findAllCategories() {
         List<Category> categories = categoryDAO.findAll();
         if (categories.isEmpty()) {
             logger.error("No categories found");
@@ -118,6 +128,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Long id) {
         Category category = categoryDAO.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category not found"));

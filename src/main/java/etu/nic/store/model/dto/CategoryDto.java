@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
-public class CategoryDTO {
+public class CategoryDto {
     private Long id;
     private String title;
     private String description;

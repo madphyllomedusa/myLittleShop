@@ -5,10 +5,10 @@ import etu.nic.store.model.entity.Product;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProductDAO {
+public interface ProductDao {
     List<Product> findAllProducts();
     Optional<Product> findById(Long id);
-    Optional<Product> findProductByIdAndDeleted(Long id);
+    Optional<Product> findDeletedProductById(Long id);
     void addCategoryToProduct(Long productId, Long categoryId);
     void removeCategoryFromProduct(Long productId, Long categoryId);
     Product save(Product product);

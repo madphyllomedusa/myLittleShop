@@ -1,6 +1,5 @@
 package etu.nic.store.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import etu.nic.store.model.enums.ProductType;
@@ -14,10 +13,10 @@ import java.util.Set;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = SmartphoneDTO.class, name = "SMARTPHONE"),
-    @JsonSubTypes.Type(value = WashingMachineDTO.class, name = "WASHING_MACHINE")
+    @JsonSubTypes.Type(value = SmartphoneDto.class, name = "SMARTPHONE"),
+    @JsonSubTypes.Type(value = WashingMachineDto.class, name = "WASHING_MACHINE")
 })
-public abstract class ProductDTO {
+public abstract class ProductDto {
     private Long id;
     private String name;
     private String description;

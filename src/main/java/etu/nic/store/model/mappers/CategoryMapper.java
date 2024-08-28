@@ -1,18 +1,17 @@
 package etu.nic.store.model.mappers;
 
-import etu.nic.store.model.dto.CategoryDTO;
+import etu.nic.store.model.dto.CategoryDto;
 import etu.nic.store.model.entity.Category;
 import etu.nic.store.model.entity.Product;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class CategoryMapper {
 
-    public CategoryDTO toDTO(Category category) {
-        CategoryDTO dto = new CategoryDTO();
+    public CategoryDto toDTO(Category category) {
+        CategoryDto dto = new CategoryDto();
         dto.setId(category.getId());
         dto.setTitle(category.getTitle());
         dto.setDescription(category.getDescription());
@@ -21,7 +20,7 @@ public class CategoryMapper {
         return dto;
     }
 
-    public Category toEntity(CategoryDTO categoryDTO, Set<Product> products) {
+    public Category toEntity(CategoryDto categoryDTO, Set<Product> products) {
         Category category = new Category();
         category.setId(categoryDTO.getId());
         category.setTitle(categoryDTO.getTitle());

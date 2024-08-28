@@ -1,11 +1,11 @@
 package etu.nic.store.service.impl;
 
-import etu.nic.store.dao.impl.ProductDAOImpl;
-import etu.nic.store.dao.impl.CategoryDAOImpl;
+import etu.nic.store.dao.impl.ProductDaoImpl;
+import etu.nic.store.dao.impl.CategoryDaoImpl;
 import etu.nic.store.exceptionhandler.BadRequestException;
 import etu.nic.store.exceptionhandler.InternalServerErrorException;
 import etu.nic.store.exceptionhandler.NotFoundException;
-import etu.nic.store.model.dto.ProductDTO;
+import etu.nic.store.model.dto.ProductDto;
 import etu.nic.store.model.entity.Product;
 import etu.nic.store.model.entity.Category;
 import etu.nic.store.model.mappers.ProductMapper;
@@ -25,12 +25,12 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
     private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
-    private final ProductDAOImpl productDAO;
-    private final CategoryDAOImpl categoryDAO;
+    private final ProductDaoImpl productDAO;
+    private final CategoryDaoImpl categoryDAO;
     private final ProductMapper productMapper;
 
     @Override
-    public List<ProductDTO> findAllProducts() {
+    public List<ProductDto> findAllProducts() {
         List<Product> products = productDAO.findAllProducts();
         if (products.isEmpty()) {
             logger.warn("Product list is empty");
@@ -42,7 +42,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO findProductById(Long id) {
+    public ProductDto findProductById(Long id) {
         if (id <= 0) {
             logger.error("Invalid product ID: {}", id);
             throw new BadRequestException("Invalid product ID");
@@ -53,11 +53,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO saveProduct(ProductDTO productDTO) {
+    public ProductDto saveProduct(ProductDto productDTO) {
         if (productDTO.getPrice().intValue() <= 0) {
             logger.error("Input price unavailable: {}", productDTO.getPrice());
             throw new BadRequestException("Price must be greater than zero");
         }
+
+        if(productDTO.getType() == null) {
+            logger.error("Product don't have type: {}", productDTO.getType());
+            throw new BadRequestException("Product must have type");
+        }
+
         logger.info("Received from client {}", productDTO);
 
         Set<Category> categories = new HashSet<>();
@@ -72,13 +78,18 @@ public class ProductServiceImpl implements ProductService {
         product.setDeletedTime(null);
 
         Product savedProduct = productDAO.save(product);
+
+        for (Category category : product.getCategories()) {
+            productDAO.addCategoryToProduct(product.getId(), category.getId());
+        }
+
         logger.info("Product saved: {}", savedProduct);
         return productMapper.toDTO(savedProduct);
     }
 
 
     @Override
-    public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
+    public ProductDto updateProduct(Long id, ProductDto productDTO) {
         if (productDAO.findById(id).isEmpty()) {
             throw new NotFoundException("Product not found");
         }

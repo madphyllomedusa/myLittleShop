@@ -1,9 +1,9 @@
 package etu.nic.store.model.mappers;
 
-import etu.nic.store.dao.CategoryDAO;
-import etu.nic.store.model.dto.ProductDTO;
-import etu.nic.store.model.dto.SmartphoneDTO;
-import etu.nic.store.model.dto.WashingMachineDTO;
+import etu.nic.store.dao.CategoryDao;
+import etu.nic.store.model.dto.ProductDto;
+import etu.nic.store.model.dto.SmartphoneDto;
+import etu.nic.store.model.dto.WashingMachineDto;
 import etu.nic.store.model.entity.Category;
 import etu.nic.store.model.entity.Product;
 import etu.nic.store.model.entity.Smartphone;
@@ -18,15 +18,15 @@ import java.util.stream.Collectors;
 @Component
 public class ProductMapper {
 
-    private final CategoryDAO categoryDAO;
+    private final CategoryDao categoryDAO;
 
-    public ProductMapper(CategoryDAO categoryDAO) {
+    public ProductMapper(CategoryDao categoryDAO) {
         this.categoryDAO = categoryDAO;
     }
 
-    public ProductDTO toDTO(Product product) {
+    public ProductDto toDTO(Product product) {
         if (product instanceof Smartphone) {
-            SmartphoneDTO dto = new SmartphoneDTO();
+            SmartphoneDto dto = new SmartphoneDto();
             dto.setId(product.getId());
             dto.setName(product.getName());
             dto.setPrice(product.getPrice());
@@ -41,7 +41,7 @@ public class ProductMapper {
             dto.setStorageCapacity(((Smartphone) product).getStorageCapacity());
             return dto;
         } else if (product instanceof WashingMachine) {
-            WashingMachineDTO dto = new WashingMachineDTO();
+            WashingMachineDto dto = new WashingMachineDto();
             dto.setId(product.getId());
             dto.setName(product.getName());
             dto.setPrice(product.getPrice());
@@ -57,13 +57,13 @@ public class ProductMapper {
         throw new UnsupportedOperationException("Unsupported product type");
     }
 
-    public Product toEntity(ProductDTO productDTO) {
+    public Product toEntity(ProductDto productDTO) {
         Set<Category> categories = productDTO.getCategoryIds().stream()
                 .map(categoryDAO::findById)
                 .map(optionalCategory -> optionalCategory.orElseThrow(() -> new NotFoundException("Category not found")))
                 .collect(Collectors.toSet());
 
-        if (productDTO instanceof SmartphoneDTO) {
+        if (productDTO instanceof SmartphoneDto) {
             Smartphone smartphone = new Smartphone();
             smartphone.setId(productDTO.getId());
             smartphone.setName(productDTO.getName());
@@ -71,12 +71,12 @@ public class ProductMapper {
             smartphone.setDescription(productDTO.getDescription());
             smartphone.setCategories(categories);
             smartphone.setType(ProductType.SMARTPHONE);
-            smartphone.setModel(((SmartphoneDTO) productDTO).getModel());
-            smartphone.setColor(((SmartphoneDTO) productDTO).getColor());
-            smartphone.setStorageCapacity(((SmartphoneDTO) productDTO)
+            smartphone.setModel(((SmartphoneDto) productDTO).getModel());
+            smartphone.setColor(((SmartphoneDto) productDTO).getColor());
+            smartphone.setStorageCapacity(((SmartphoneDto) productDTO)
                     .getStorageCapacity());
             return smartphone;
-        } else if (productDTO instanceof WashingMachineDTO) {
+        } else if (productDTO instanceof WashingMachineDto) {
             WashingMachine washingMachine = new WashingMachine();
             washingMachine.setId(productDTO.getId());
             washingMachine.setName(productDTO.getName());
@@ -84,7 +84,7 @@ public class ProductMapper {
             washingMachine.setDescription(productDTO.getDescription());
             washingMachine.setCategories(categories);
             washingMachine.setType(ProductType.WASHING_MACHINE);
-            washingMachine.setSpinSpeed(((WashingMachineDTO) productDTO)
+            washingMachine.setSpinSpeed(((WashingMachineDto) productDTO)
                     .getSpinSpeed());
             return washingMachine;
         }
