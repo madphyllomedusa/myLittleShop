@@ -3,7 +3,6 @@ package etu.nic.store.dao.impl;
 import etu.nic.store.dao.CategoryDao;
 import etu.nic.store.model.entity.Category;
 import lombok.AllArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,7 +17,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CategoryDaoImpl implements CategoryDao {
 
-    private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 
@@ -108,8 +106,10 @@ public class CategoryDaoImpl implements CategoryDao {
             throw new IllegalStateException("Cannot delete category with products");
         }
 
-        String sql = "UPDATE categories SET deleted_time = NOW() WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        String sql = "UPDATE categories SET deleted_time = NOW() WHERE id = :id";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", id);
+        namedParameterJdbcTemplate.update(sql, params);
     }
 
     private boolean hasProducts(Long categoryId) {
