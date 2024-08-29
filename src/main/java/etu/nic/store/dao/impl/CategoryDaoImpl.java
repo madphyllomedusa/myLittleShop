@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -131,7 +132,7 @@ public class CategoryDaoImpl implements CategoryDao {
         category.setParentId(rs.getLong("parent_id"));
 
         Timestamp deletedTimestamp = rs.getTimestamp("deleted_time");
-        category.setDeletedTime(deletedTimestamp != null ? deletedTimestamp.toLocalDateTime() : null);
+        category.setDeletedTime(deletedTimestamp != null ? deletedTimestamp.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime() : null);
 
         return category;
     }

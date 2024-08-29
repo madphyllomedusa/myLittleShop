@@ -59,11 +59,6 @@ public class ProductServiceImpl implements ProductService {
             throw new BadRequestException("Price must be greater than zero");
         }
 
-        if(productDTO.getType() == null) {
-            logger.error("Product don't have type: {}", productDTO.getType());
-            throw new BadRequestException("Product must have type");
-        }
-
         logger.info("Received from client {}", productDTO);
 
         Set<Category> categories = new HashSet<>();
@@ -74,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
                     .collect(Collectors.toSet());
         }
 
-        Product product = productMapper.toEntity(productDTO);
+        Product product = productMapper.toEntity(productDTO,categories);
         product.setDeletedTime(null);
 
         Product savedProduct = productDAO.save(product);
@@ -100,7 +95,7 @@ public class ProductServiceImpl implements ProductService {
                             .orElseThrow(() -> new NotFoundException("Category not found")))
                     .collect(Collectors.toSet());
 
-            Product product = productMapper.toEntity(productDTO);
+            Product product = productMapper.toEntity(productDTO,categories);
             product.setId(id);
             Product updatedProduct = productDAO.update(product);
             logger.info("Product updated: {}", updatedProduct);

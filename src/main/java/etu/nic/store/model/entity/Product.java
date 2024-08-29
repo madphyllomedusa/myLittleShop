@@ -1,20 +1,20 @@
 package etu.nic.store.model.entity;
 
-import etu.nic.store.model.enums.ProductType;
 import lombok.Data;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Set;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
-public abstract class Product {
+public class Product {
     private Long id;
     private String name;
     private String description;
     private BigDecimal price;
     private Set<Category> categories;
-    private LocalDateTime deletedTime;
-    private ProductType type;
+    private OffsetDateTime deletedTime;
+    private Map<String, String> parameters;
 }

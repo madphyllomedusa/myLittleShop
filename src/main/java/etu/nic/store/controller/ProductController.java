@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -30,13 +29,13 @@ public class ProductController {
     }
 
     @PostMapping()
-    public ResponseEntity<ProductDto> saveProduct(@Valid @RequestBody ProductDto productDTO) {
+    public ResponseEntity<ProductDto> saveProduct( @RequestBody ProductDto productDTO) {
         ProductDto savedProduct = productService.saveProduct(productDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable long id, @Valid @RequestBody ProductDto productDTO) {
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable long id, @RequestBody ProductDto productDTO) {
         ProductDto updatedProduct = productService.updateProduct(id, productDTO);
         return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
     }
