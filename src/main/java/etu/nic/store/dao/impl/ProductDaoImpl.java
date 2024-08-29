@@ -1,8 +1,8 @@
 package etu.nic.store.dao.impl;
 
 import etu.nic.store.dao.ProductDao;
-import etu.nic.store.model.entity.Category;
-import etu.nic.store.model.entity.Product;
+import etu.nic.store.model.pojo.Category;
+import etu.nic.store.model.pojo.Product;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;

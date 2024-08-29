@@ -1,8 +1,8 @@
 package etu.nic.store.model.mappers;
 
 import etu.nic.store.model.dto.CategoryDto;
-import etu.nic.store.model.entity.Category;
-import etu.nic.store.model.entity.Product;
+import etu.nic.store.model.pojo.Category;
+import etu.nic.store.model.pojo.Product;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;

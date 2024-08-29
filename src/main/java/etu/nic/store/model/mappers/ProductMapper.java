@@ -1,10 +1,8 @@
 package etu.nic.store.model.mappers;
 
-import etu.nic.store.dao.CategoryDao;
 import etu.nic.store.model.dto.ProductDto;
-import etu.nic.store.model.entity.Category;
-import etu.nic.store.model.entity.Product;
-import etu.nic.store.exceptionhandler.NotFoundException;
+import etu.nic.store.model.pojo.Category;
+import etu.nic.store.model.pojo.Product;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;

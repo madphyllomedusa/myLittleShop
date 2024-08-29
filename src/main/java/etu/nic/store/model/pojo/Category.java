@@ -1,8 +1,7 @@
-package etu.nic.store.model.entity;
+package etu.nic.store.model.pojo;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Set;
 
