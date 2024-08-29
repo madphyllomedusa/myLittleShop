@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +54,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductDto saveProduct(ProductDto productDTO) {
         if (productDTO.getPrice().intValue() <= 0) {
             logger.error("Input price unavailable: {}", productDTO.getPrice());
@@ -84,6 +86,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
+    @Transactional
     public ProductDto updateProduct(Long id, ProductDto productDTO) {
         if (productDAO.findById(id).isEmpty()) {
             throw new NotFoundException("Product not found");
@@ -107,6 +110,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public void deleteProduct(Long id) {
         if (id <= 0) {
             logger.error("Invalid product ID: {}", id);
