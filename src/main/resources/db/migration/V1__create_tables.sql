@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS products (
     id BIGSERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT,
-    price DECIMAL(10, 2) NOT NULL,
+    price DECIMAL NOT NULL,
     deleted_time TIMESTAMP WITH TIME ZONE
 );
 
