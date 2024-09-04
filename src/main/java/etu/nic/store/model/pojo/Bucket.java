@@ -6,6 +6,7 @@ import java.util.List;
 public class Bucket {
     private Long id;
     private User user;
-    private List<Product> products;
+    private List<Long> productId;
     private BigDecimal totalPrice;
+    private Integer totalAmount;
 }
