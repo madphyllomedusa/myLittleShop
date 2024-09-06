@@ -38,3 +38,13 @@ CREATE TABLE IF NOT EXISTS product_parameter (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     FOREIGN KEY (parameter_id) REFERENCES parameters(id) ON DELETE CASCADE
 );
+
+
+CREATE TABLE IF NOT EXISTS users (
+    id BIGSERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL,
+    archived TIMESTAMP WITH TIME ZONE
+);
