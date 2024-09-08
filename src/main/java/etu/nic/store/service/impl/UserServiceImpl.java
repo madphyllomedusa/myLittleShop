@@ -1,5 +1,6 @@
 package etu.nic.store.service.impl;
 
+import etu.nic.store.config.JwtTokenProvider;
 import etu.nic.store.dao.UserDao;
 import etu.nic.store.model.dto.UserDto;
 import etu.nic.store.model.enums.Role;
@@ -7,22 +8,31 @@ import etu.nic.store.model.mappers.UserMapper;
 import etu.nic.store.model.pojo.User;
 import etu.nic.store.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.time.OffsetDateTime;
 
 @Service
 @AllArgsConstructor
+@NoArgsConstructor(force = true)
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-
+    private final JwtTokenProvider jwtTokenProvider;
     @Override
     public UserDto findUserById(Long userId) {
         User user = userDao.findById(userId)
@@ -31,31 +41,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto loginUser(UserDto userDto) {
-        User user = (User) loadUserByUsername(userDto.getEmail());
-
-        if (user.getArchived() != null) {
-            throw new IllegalStateException("User account is archived");
-        }
-
-        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("Invalid password");
-        }
-
-
-        UserDto loggedInUser = userMapper.toDto(user);
-        return loggedInUser;
+    public UserDto loginUser(UserDto userDto, HttpServletResponse response) {
+       return null;
     }
 
     @Override
     @Transactional
-    public UserDto saveUser(UserDto userDto) {
-        User user = userMapper.toEntity(userDto);
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setRole(Role.USER);
-        user.setArchived(null);
-        userDao.save(user);
-        return userMapper.toDto(user);
+    public UserDto saveUser(UserDto userDto, HttpServletResponse response) {
+
+        return null;
     }
 
     @Override
