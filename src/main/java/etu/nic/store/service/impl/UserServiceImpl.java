@@ -3,6 +3,7 @@ package etu.nic.store.service.impl;
 import etu.nic.store.config.JwtService;
 import etu.nic.store.dao.UserDao;
 import etu.nic.store.exceptionhandler.BadRequestException;
+import etu.nic.store.exceptionhandler.NotFoundException;
 import etu.nic.store.model.dto.JwtAuthenticationResponse;
 import etu.nic.store.model.dto.SignInRequest;
 import etu.nic.store.model.dto.UserDto;
@@ -48,14 +49,19 @@ public class UserServiceImpl implements UserService {
         String identifier = signInRequest.getIdentifier();
         String password = signInRequest.getPassword();
         logger.info("Attempting to login user with identifier {}", identifier);
+
         Optional<User> optionalUser = userDao.findByEmail(identifier);
 
         if (!optionalUser.isPresent()) {
             optionalUser = userDao.findByName(identifier);
         }
 
-        User user = optionalUser
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден с идентификатором: " + identifier));
+        if (!optionalUser.isPresent()) {
+            // Выбрасываем ваше собственное исключение NotFoundException
+            throw new NotFoundException("Пользователь не найден с идентификатором: " + identifier);
+        }
+
+        User user = optionalUser.get();
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BadRequestException("Неверный пароль");
@@ -66,6 +72,7 @@ public class UserServiceImpl implements UserService {
 
         return new JwtAuthenticationResponse(token);
     }
+
 
 
     @Override
