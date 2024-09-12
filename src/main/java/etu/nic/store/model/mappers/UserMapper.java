@@ -4,12 +4,15 @@ import etu.nic.store.model.dto.UserDto;
 import etu.nic.store.model.enums.Role;
 import etu.nic.store.model.pojo.User;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.ZoneOffset;
+import java.util.Collections;
 
 @Component
 public class UserMapper implements RowMapper<User> {
@@ -54,6 +57,13 @@ public class UserMapper implements RowMapper<User> {
         }
 
         return user;
+    }
+    public UserDetails toUserDetails(User user) {
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+        );
     }
 }
 

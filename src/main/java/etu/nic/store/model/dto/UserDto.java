@@ -15,5 +15,4 @@ public class UserDto {
     private String matchingPassword;
     private OffsetDateTime archived;
 
-    private String jwtToken;
 }

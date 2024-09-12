@@ -48,6 +48,18 @@ public class UserDaoImpl implements UserDao {
         return users.stream().findFirst();
     }
 
+    @Override
+    public Optional<User> findByName(String name) {
+        String sql = "SELECT * FROM users WHERE name = :name AND archived IS NULL";
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("name", name);
+
+        List<User> users = namedParameterJdbcTemplate.query(sql, params, userMapper);
+
+        return users.stream().findFirst();
+    }
+
 
     @Override
     public User save(User user) {

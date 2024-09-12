@@ -1,38 +1,41 @@
 package etu.nic.store.service.impl;
 
-import etu.nic.store.config.JwtTokenProvider;
+import etu.nic.store.config.JwtService;
 import etu.nic.store.dao.UserDao;
+import etu.nic.store.exceptionhandler.BadRequestException;
+import etu.nic.store.model.dto.JwtAuthenticationResponse;
+import etu.nic.store.model.dto.SignInRequest;
 import etu.nic.store.model.dto.UserDto;
 import etu.nic.store.model.enums.Role;
 import etu.nic.store.model.mappers.UserMapper;
 import etu.nic.store.model.pojo.User;
 import etu.nic.store.service.UserService;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-@NoArgsConstructor(force = true)
 public class UserServiceImpl implements UserService {
+    private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
+
+
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtService jwtService;
+
     @Override
     public UserDto findUserById(Long userId) {
         User user = userDao.findById(userId)
@@ -41,16 +44,54 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto loginUser(UserDto userDto, HttpServletResponse response) {
-       return null;
+    public JwtAuthenticationResponse loginUser(SignInRequest signInRequest) {
+        String identifier = signInRequest.getIdentifier();
+        String password = signInRequest.getPassword();
+        logger.info("Attempting to login user with identifier {}", identifier);
+        Optional<User> optionalUser = userDao.findByEmail(identifier);
+
+        if (!optionalUser.isPresent()) {
+            optionalUser = userDao.findByName(identifier);
+        }
+
+        User user = optionalUser
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден с идентификатором: " + identifier));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BadRequestException("Неверный пароль");
+        }
+
+        UserDetails userDetails = userMapper.toUserDetails(user);
+        String token = jwtService.generateToken(userDetails);
+
+        return new JwtAuthenticationResponse(token);
     }
+
 
     @Override
     @Transactional
-    public UserDto saveUser(UserDto userDto, HttpServletResponse response) {
+    public UserDto saveUser(UserDto userDto) {
+        logger.info("Saving user {}", userDto);
+        if (userDao.findByEmail(userDto.getEmail()).isPresent()) {
+            throw new BadRequestException("Email уже используется");
+        }
 
-        return null;
+        if (!userDto.getPassword().equals(userDto.getMatchingPassword())) {
+            throw new BadRequestException("Пароли не совпадают");
+        }
+
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+
+        if (userDto.getRole() == null) {
+            userDto.setRole(Role.USER);
+        }
+
+        User user = userMapper.toEntity(userDto);
+        User savedUser = userDao.save(user);
+
+        return userMapper.toDto(savedUser);
     }
+
 
     @Override
     @Transactional
@@ -87,7 +128,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userDao.findByEmail(email)
+        User user = userDao.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        return userMapper.toUserDetails(user);
     }
 }
