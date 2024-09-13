@@ -31,7 +31,7 @@ public class BucketServiceImpl implements BucketService {
     @Override
     @Transactional
     public BucketDto addProductToBucket(Long userId, Long productId, Integer quantity) {
-
+        logger.info("Adding product to bucket. UserId = {}, productId = {}", userId, productId);
         Bucket bucket = bucketDao.findByUserId(userId).orElseGet(() -> {
             Bucket newBucket = new Bucket();
             newBucket.setUserId(userId);
@@ -45,8 +45,9 @@ public class BucketServiceImpl implements BucketService {
         }
 
         addProductToBucketLogic(bucket, productId, quantity);
-
+        logger.info("Bucket added successfully {}. UserId = {}, productId = {}" ,bucket, userId, productId);
         bucket.calculateTotalCost();
+        logger.info("Bucket calculated total cost is {}", bucket.getTotalCost());
         bucketDao.update(bucket);
 
         return bucketMapper.toDto(bucket);
@@ -74,6 +75,7 @@ public class BucketServiceImpl implements BucketService {
     @Override
     @Transactional
     public BucketDto updateBucket(BucketDto bucketDto) {
+        logger.info("Updating bucket with id {}, and bucket: {}", bucketDto.getId(), bucketDto);
         Bucket bucket = bucketMapper.toEntity(bucketDto);
         for (BucketItem item : bucket.getItems()) {
             if (item.getId() == null) {
@@ -85,7 +87,8 @@ public class BucketServiceImpl implements BucketService {
 
         bucket.calculateTotalCost();
         bucketDao.update(bucket);
-
+        logger.info("Bucket successfully updated {}", bucketDto.getId());
+        logger.info("Bucket after update: {}", bucket);
         return bucketMapper.toDto(bucket);
     }
 
@@ -103,7 +106,9 @@ public class BucketServiceImpl implements BucketService {
                                     .multiply(BigDecimal.valueOf(item.getQuantity())));
                         },
                         () -> {
-                            BucketItem newItem = new BucketItem(null, productId, bucket.getId(),
+                            BucketItem newItem = new BucketItem(null,
+                                    productId,
+                                    bucket.getId(),
                                     quantity,
                                     product.getPrice()
                                     .multiply(BigDecimal.valueOf(quantity)));

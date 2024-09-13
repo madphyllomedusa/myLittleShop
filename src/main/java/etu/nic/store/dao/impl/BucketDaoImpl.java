@@ -11,8 +11,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,15 +23,13 @@ public class BucketDaoImpl implements BucketDao {
 
     @Override
     public Optional<Bucket> findByUserId(Long userId) {
-        // Запрос на получение корзины
         String sql = "SELECT * FROM buckets WHERE user_id = :userId";
         MapSqlParameterSource params = new MapSqlParameterSource("userId", userId);
         List<Bucket> buckets = jdbcTemplate.query(sql, params, bucketMapper::mapRowToBucket);
 
         if (!buckets.isEmpty()) {
             Bucket bucket = buckets.get(0);
-            // Загружаем товары для корзины
-            bucket.setItems(getBucketItems(bucket.getId())); // Получаем товары корзины
+            bucket.setItems(getBucketItems(bucket.getId()));
             return Optional.of(bucket);
         }
         return Optional.empty();
@@ -104,7 +100,6 @@ public class BucketDaoImpl implements BucketDao {
     }
 
 private List<BucketItem> getBucketItems(Long bucketId) {
-    // Запрос на получение товаров для данной корзины
     String sql = "SELECT bi.*, p.name as product_name FROM bucket_items bi " +
                  "JOIN products p ON bi.product_id = p.id " +
                  "WHERE bi.bucket_id = :bucketId";
