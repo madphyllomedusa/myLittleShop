@@ -19,12 +19,14 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(updatedUser);
     }
+
     @PutMapping("/update-user/{userId}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) {
         UserDto updatedUser = userService.updateUser(userId, userDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(updatedUser);
     }
+
     @DeleteMapping("/archive/{userId}")
     public ResponseEntity<Void> archiveUser(@PathVariable Long userId) {
         userService.archiveUser(userId);
