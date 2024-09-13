@@ -10,11 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -49,11 +45,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findByName(String name) {
-        String sql = "SELECT * FROM users WHERE name = :name AND archived IS NULL";
+    public Optional<User> findByName(String username) {
+        String sql = "SELECT * FROM users WHERE username = :username AND archived IS NULL";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", name);
+        params.addValue("username",username );
 
         List<User> users = namedParameterJdbcTemplate.query(sql, params, userMapper);
 
@@ -63,11 +59,11 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User save(User user) {
-        String sql = "INSERT INTO users (name, email, password, role, archived)" +
-                " VALUES (:name, :email, :password, :role, :archived)";
+        String sql = "INSERT INTO users (username, email, password, role, archived)" +
+                " VALUES (:username, :email, :password, :role, :archived)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", user.getName())
+                .addValue("username", user.getUsername())
                 .addValue("email", user.getEmail())
                 .addValue("password", user.getPassword())
                 .addValue("role", user.getRole().name())
@@ -84,9 +80,9 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User update(User user) {
-        String sql = "UPDATE users SET name = :name, email = :email, password =:password, role=:role, archived=:archived";
+        String sql = "UPDATE users SET username = :username, email = :email, password =:password, role=:role, archived=:archived";
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", user.getName());
+        params.addValue("username", user.getUsername());
         params.addValue("email", user.getEmail());
         params.addValue("password", user.getPassword());
         params.addValue("role", user.getRole().name());

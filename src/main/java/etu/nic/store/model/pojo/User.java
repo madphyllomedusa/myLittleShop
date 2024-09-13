@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class User implements UserDetails {
     private Long id;
-    private String name;
+    private String username;
     private String email;
     private String password;
     private OffsetDateTime archived;
@@ -25,7 +25,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return name;
+        return username;
     }
 
     @Override

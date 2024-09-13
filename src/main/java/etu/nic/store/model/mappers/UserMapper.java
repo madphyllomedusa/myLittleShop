@@ -20,7 +20,7 @@ public class UserMapper implements RowMapper<User> {
     public UserDto toDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
-        userDto.setName(user.getName().toLowerCase());
+        userDto.setUsername(user.getUsername().toLowerCase());
         userDto.setEmail(user.getEmail().toLowerCase());
         userDto.setPassword(user.getPassword());
         userDto.setRole(user.getRole());
@@ -31,7 +31,7 @@ public class UserMapper implements RowMapper<User> {
     public User toEntity(UserDto userDto) {
         User user = new User();
         user.setId(userDto.getId());
-        user.setName(userDto.getName().toLowerCase());
+        user.setUsername(userDto.getUsername().toLowerCase());
         user.setEmail(userDto.getEmail().toLowerCase());
         user.setPassword(userDto.getPassword());
         user.setRole(userDto.getRole());
@@ -52,7 +52,7 @@ public class UserMapper implements RowMapper<User> {
     public User mapRow(ResultSet rs, int rowNum) throws SQLException {
         User user = new User();
         user.setId(rs.getLong("id"));
-        user.setName(rs.getString("name"));
+        user.setUsername(rs.getString("name"));
         user.setEmail(rs.getString("email"));
         user.setPassword(rs.getString("password"));
         user.setRole(Role.valueOf(rs.getString("role")));

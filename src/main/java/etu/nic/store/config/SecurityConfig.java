@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -34,29 +36,38 @@ public class SecurityConfig {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-            throws Exception {
+   @Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(
-                        //todo Настроить админку
-                        "/auth/**",
-                        "/products/**",
-                        "/categories/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthenticationFilter,
-                    UsernamePasswordAuthenticationFilter.class);
+    http
+        .csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
 
-        return http.build();
-    }
+            .requestMatchers(HttpMethod.GET,
+                    "/products/**",
+                    "/categories/**").permitAll()
+
+            .requestMatchers(HttpMethod.POST,
+                    "/products/**",
+                    "/categories/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PUT,
+                    "/products/**",
+                    "/categories/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.DELETE,
+                    "/products/**",
+                    "/categories/**").hasRole("ADMIN")
+
+            .anyRequest().authenticated()
+        )
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        )
+        .authenticationProvider(authenticationProvider())
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+    return http.build();
+}
 
 
     @Bean

@@ -49,11 +49,11 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> optionalUser = userDao.findByEmail(identifier);
 
-        if (!optionalUser.isPresent()) {
+        if (optionalUser.isEmpty()) {
             optionalUser = userDao.findByName(identifier);
         }
 
-        if (!optionalUser.isPresent()) {
+        if (optionalUser.isEmpty()) {
             throw new NotFoundException("Пользователь не найден с идентификатором: " + identifier);
         }
 
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
         User user = userDao.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        user.setName(userDto.getName());
+        user.setUsername(userDto.getUsername());
         user.setEmail(userDto.getEmail());
         if (userDto.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
@@ -133,6 +133,18 @@ public class UserServiceImpl implements UserService {
         user.setArchived(null);
         userDao.update(user);
         logger.info("Successfully restored user with id {}", userId);
+    }
+
+    @Override
+    @Transactional
+    public UserDto giveAdminRole(Long userId) {
+        logger.warn("Giving admin role for user with id {}", userId);
+        User user = userDao.findById(userId)
+                .orElseThrow(()-> new UsernameNotFoundException("User not found"));
+        user.setRole(Role.ADMIN);
+        userDao.update(user);
+        logger.warn("Successfully gived admin role for user {}", user.getUsername());
+        return userMapper.toDto(user);
     }
 
     @Override

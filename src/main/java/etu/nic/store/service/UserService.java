@@ -13,4 +13,6 @@ public interface UserService extends UserDetailsService {
     UserDto updateUser(Long userId, UserDto userDto);
     void archiveUser(Long userId);
     void restoreUser(Long userId);
+
+    UserDto giveAdminRole(Long userId);
 }

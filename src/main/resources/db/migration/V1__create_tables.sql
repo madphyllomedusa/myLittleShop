@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS product_parameter (
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     role TEXT NOT NULL,
