@@ -3,6 +3,7 @@ package etu.nic.store.controller;
 import etu.nic.store.model.dto.BucketDto;
 import etu.nic.store.service.BucketService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class BucketController {
     @PostMapping("/add/{userId}/{productId}")
     public ResponseEntity<BucketDto> addProductToBucket(@PathVariable Long userId, @PathVariable Long productId, @RequestParam int quantity) {
         BucketDto bucketDto = bucketService.addProductToBucket(userId, productId, quantity);
-        return ResponseEntity.ok(bucketDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(bucketDto);
     }
 
     @GetMapping("/{userId}")
