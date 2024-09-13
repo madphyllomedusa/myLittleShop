@@ -20,9 +20,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.servlet.http.HttpServletResponse;
-
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
@@ -31,7 +28,6 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
-
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
@@ -39,6 +35,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto findUserById(Long userId) {
+        logger.info("Find user by id: {}", userId);
         User user = userDao.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return userMapper.toDto(user);
@@ -46,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public JwtAuthenticationResponse loginUser(SignInRequest signInRequest) {
-        String identifier = signInRequest.getIdentifier();
+        String identifier = signInRequest.getIdentifier().toLowerCase();
         String password = signInRequest.getPassword();
         logger.info("Attempting to login user with identifier {}", identifier);
 
@@ -57,7 +54,6 @@ public class UserServiceImpl implements UserService {
         }
 
         if (!optionalUser.isPresent()) {
-            // Выбрасываем ваше собственное исключение NotFoundException
             throw new NotFoundException("Пользователь не найден с идентификатором: " + identifier);
         }
 
@@ -69,17 +65,16 @@ public class UserServiceImpl implements UserService {
 
         UserDetails userDetails = userMapper.toUserDetails(user);
         String token = jwtService.generateToken(userDetails);
-
+        logger.info("Generated token: {}", token);
         return new JwtAuthenticationResponse(token);
     }
-
-
 
     @Override
     @Transactional
     public UserDto saveUser(UserDto userDto) {
         logger.info("Saving user {}", userDto);
         if (userDao.findByEmail(userDto.getEmail()).isPresent()) {
+            logger.info("User already exists with email {}", userDto.getEmail());
             throw new BadRequestException("Email уже используется");
         }
 
@@ -103,14 +98,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto updateUser(Long userId, UserDto userDto) {
+        logger.info("Updating user with id {}", userId);
+
         User user = userDao.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
         if (userDto.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
-
         userDao.update(user);
         return userMapper.toDto(user);
     }
@@ -118,19 +115,24 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void archiveUser(Long userId) {
+        logger.info("Archiving user with id {}", userId);
         User user = userDao.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        user.setArchived(OffsetDateTime.now());
+        var now = OffsetDateTime.now();
+        user.setArchived(now);
         userDao.update(user);
+        logger.info("Successfully archived user with id {}, with time {}", userId,now);
     }
 
     @Override
     @Transactional
     public void restoreUser(Long userId) {
+        logger.info("Restoring user with id {}", userId);
         User user = userDao.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         user.setArchived(null);
         userDao.update(user);
+        logger.info("Successfully restored user with id {}", userId);
     }
 
     @Override

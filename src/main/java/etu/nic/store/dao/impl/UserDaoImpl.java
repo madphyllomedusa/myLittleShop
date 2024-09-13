@@ -66,23 +66,19 @@ public class UserDaoImpl implements UserDao {
         String sql = "INSERT INTO users (name, email, password, role, archived)" +
                 " VALUES (:name, :email, :password, :role, :archived)";
 
-        // Параметры для запроса
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", user.getName())
                 .addValue("email", user.getEmail())
                 .addValue("password", user.getPassword())
-                .addValue("role", user.getRole().name())  // Преобразуем enum Role в строку
+                .addValue("role", user.getRole().name())
                 .addValue("archived", user.getArchived());
 
-        // Используем KeyHolder для получения сгенерированного идентификатора
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 
-        // Получаем сгенерированный id и присваиваем его объекту User
         Long generatedId = keyHolder.getKey().longValue();
         user.setId(generatedId);
 
-        // Возвращаем обновленный объект User
         return user;
     }
 

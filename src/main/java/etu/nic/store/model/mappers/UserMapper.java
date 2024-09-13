@@ -20,8 +20,8 @@ public class UserMapper implements RowMapper<User> {
     public UserDto toDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
-        userDto.setName(user.getName());
-        userDto.setEmail(user.getEmail());
+        userDto.setName(user.getName().toLowerCase());
+        userDto.setEmail(user.getEmail().toLowerCase());
         userDto.setPassword(user.getPassword());
         userDto.setRole(user.getRole());
         userDto.setArchived(user.getArchived());
@@ -31,12 +31,20 @@ public class UserMapper implements RowMapper<User> {
     public User toEntity(UserDto userDto) {
         User user = new User();
         user.setId(userDto.getId());
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
+        user.setName(userDto.getName().toLowerCase());
+        user.setEmail(userDto.getEmail().toLowerCase());
         user.setPassword(userDto.getPassword());
         user.setRole(userDto.getRole());
         user.setArchived(userDto.getArchived());
         return user;
+    }
+
+    public UserDetails toUserDetails(User user) {
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail().toLowerCase(),
+                user.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+        );
     }
 
 
@@ -58,13 +66,7 @@ public class UserMapper implements RowMapper<User> {
 
         return user;
     }
-    public UserDetails toUserDetails(User user) {
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
-        );
-    }
+
 }
 
 
