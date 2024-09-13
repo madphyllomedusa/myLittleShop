@@ -1,19 +1,18 @@
-
-package etu.nic.store.model.dto;
+package etu.nic.store.model.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BucketDto {
+public class BucketItem {
     private Long id;
-    private Long userId;
-    private BigDecimal totalCost;
-    private List<BucketItemDto> items;
+    private Long productId;
+    private Long bucketId;
+    private Integer quantity;
+    private BigDecimal itemTotalCost;
 }

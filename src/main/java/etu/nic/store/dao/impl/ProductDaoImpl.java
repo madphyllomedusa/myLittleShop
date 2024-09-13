@@ -157,8 +157,8 @@ public class ProductDaoImpl implements ProductDao {
         Product product = new Product() {
         };
         product.setId(rs.getLong("id"));
-        product.setName(rs.getString("product_name"));
-        product.setDescription(rs.getString("product_description"));
+        product.setName(rs.getString("name"));
+        product.setDescription(rs.getString("description"));
         product.setPrice(rs.getBigDecimal("price"));
         Timestamp deletedTimestamp = rs.getTimestamp("deleted_time");
         product.setDeletedTime(deletedTimestamp != null ? deletedTimestamp.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime() : null);

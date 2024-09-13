@@ -44,19 +44,20 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
 
+                .requestMatchers("/bucket/**").permitAll()
             .requestMatchers(HttpMethod.GET,
                     "/products/**",
                     "/categories/**").permitAll()
 
             .requestMatchers(HttpMethod.POST,
                     "/products/**",
-                    "/categories/**").hasRole("ADMIN")
+                    "/categories/**").permitAll()/*.hasRole("ADMIN")*/
             .requestMatchers(HttpMethod.PUT,
                     "/products/**",
-                    "/categories/**").hasRole("ADMIN")
+                    "/categories/**").permitAll()/*.hasRole("ADMIN")*/
             .requestMatchers(HttpMethod.DELETE,
                     "/products/**",
-                    "/categories/**").hasRole("ADMIN")
+                    "/categories/**").permitAll()/*.hasRole("ADMIN")*/
 
             .anyRequest().authenticated()
         )

@@ -48,3 +48,20 @@ CREATE TABLE IF NOT EXISTS users (
     role TEXT NOT NULL,
     archived TIMESTAMP WITH TIME ZONE
 );
+
+CREATE TABLE buckets (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    total_cost DECIMAL DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE bucket_items (
+    id SERIAL PRIMARY KEY,
+    bucket_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+    item_total_cost DECIMAL NOT NULL,
+    FOREIGN KEY (bucket_id) REFERENCES buckets(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
