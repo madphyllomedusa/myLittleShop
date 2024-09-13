@@ -10,5 +10,5 @@ public class StoreApplication {
         SpringApplication.run(StoreApplication.class, args);
     }
 
-    //todo транзакции, exeptionhandler, контроллер переделать, эксепшены в сервис для хттп запросов
+    //todo авторизация юзера, jwt token, корзина, заказ
 }
