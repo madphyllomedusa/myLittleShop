@@ -1,20 +1,20 @@
-package etu.nic.store.model.entity;
+package etu.nic.store.model.dto;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Set;
 
-import java.math.BigDecimal;
-
 @Data
-public class Product {
+
+public class ProductDto {
     private Long id;
     private String name;
     private String description;
     private BigDecimal price;
-    private Set<Category> categories;
+    private Set<Long> categoryIds;
     private OffsetDateTime deletedTime;
     private Map<String, String> parameters;
 }
