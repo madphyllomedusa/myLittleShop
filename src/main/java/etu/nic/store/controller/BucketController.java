@@ -18,7 +18,7 @@ public class BucketController {
     @PostMapping("/add/{userId}/{productId}")
     public ResponseEntity<BucketDto> addProductToBucket(@PathVariable Long userId, @PathVariable Long productId, @RequestParam int quantity) {
         BucketDto bucketDto = bucketService.addProductToBucket(userId, productId, quantity);
-        return ResponseEntity.status(HttpStatus.CREATED).body(bucketDto);
+        return ResponseEntity.status(HttpStatus.OK).body(bucketDto);
     }
 
     @GetMapping("/{userId}")

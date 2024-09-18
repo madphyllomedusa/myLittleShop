@@ -21,7 +21,7 @@ public class JwtService {
     private final Key secretKey;
 
     public JwtService() {
-        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Генерация случайного секретного ключа
+        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
     public String extractUsername(String token) {
