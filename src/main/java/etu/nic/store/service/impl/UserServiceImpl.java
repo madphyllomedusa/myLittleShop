@@ -26,7 +26,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
-    private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
@@ -88,6 +88,14 @@ public class UserServiceImpl implements UserService {
             userDto.setRole(Role.USER);
         }
 
+        if(userDto.getUsername() == null
+                || userDto.getUsername().isEmpty()
+                || userDto.getEmail() == null
+                || userDto.getEmail().isEmpty()) {
+            logger.warn("Some user fields is empty or null {}", userDto );
+            throw new BadRequestException("Some user fields is empty or null");
+
+        }
         User user = userMapper.toEntity(userDto);
         User savedUser = userDao.save(user);
 

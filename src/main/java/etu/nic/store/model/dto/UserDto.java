@@ -15,4 +15,9 @@ public class UserDto {
     private String matchingPassword;
     private OffsetDateTime archived;
 
+    @Override
+    public String toString() {
+        return "Username: " + username + " Email: " + email + " Role: " + role;
+    }
+
 }
