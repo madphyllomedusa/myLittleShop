@@ -1,6 +1,6 @@
 package etu.nic.store.dao;
 
-import etu.nic.store.model.entity.Category;
+import etu.nic.store.model.pojo.Category;
 
 import java.util.List;
 import java.util.Optional;
