@@ -1,6 +1,8 @@
 package etu.nic.store.config;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
@@ -32,6 +34,7 @@ public class JwtService {
         final Claims claims = parseClaims(token);
         return claimsResolver.apply(claims);
     }
+
 
     public String generateToken(UserDetails userDetails) {
         return createToken(new HashMap<>(), userDetails.getUsername());

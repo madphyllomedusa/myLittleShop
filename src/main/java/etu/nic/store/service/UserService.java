@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {
     UserDto findUserById(Long userId);
+    UserDto findUserByUsername(String username);
+    UserDto findUserByEmail(String email);
     JwtAuthenticationResponse loginUser(SignInRequest signInRequest);
     UserDto saveUser(UserDto userDto);
     UserDto updateUser(Long userId, UserDto userDto);

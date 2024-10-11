@@ -40,6 +40,20 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return userMapper.toDto(user);
     }
+    @Override
+    public UserDto findUserByUsername(String username) {
+        logger.info("Find user by username: {}", username);
+        User user = userDao.findByName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userMapper.toDto(user);
+    }
+    @Transactional
+    public UserDto findUserByEmail( String email) {
+        logger.info("Find user by email: {}", email);
+        User user = userDao.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userMapper.toDto(user);
+    }
 
     @Override
     public JwtAuthenticationResponse loginUser(SignInRequest signInRequest) {
@@ -66,6 +80,7 @@ public class UserServiceImpl implements UserService {
         UserDetails userDetails = userMapper.toUserDetails(user);
         String token = jwtService.generateToken(userDetails);
         logger.info("Generated token: {}", token);
+        logger.info("User {} successfully logged in", optionalUser.get().getUsername());
         return new JwtAuthenticationResponse(token);
     }
 
@@ -98,7 +113,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = userMapper.toEntity(userDto);
         User savedUser = userDao.save(user);
-
+        logger.info("Saved user {}", savedUser);
         return userMapper.toDto(savedUser);
     }
 

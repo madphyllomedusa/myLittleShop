@@ -1,9 +1,11 @@
 package etu.nic.store.controller;
 
+import etu.nic.store.config.JwtService;
 import etu.nic.store.model.dto.JwtAuthenticationResponse;
 import etu.nic.store.model.dto.SignInRequest;
 import etu.nic.store.model.dto.UserDto;
 import etu.nic.store.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserAuthController {
     private final UserService userService;
+    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@RequestBody UserDto userDto) {
@@ -27,5 +30,15 @@ public class UserAuthController {
     public ResponseEntity<JwtAuthenticationResponse> authenticate(@RequestBody SignInRequest signInRequest) {
         JwtAuthenticationResponse jwtResponse = userService.loginUser(signInRequest);
         return ResponseEntity.ok(jwtResponse);
+    }
+
+    @GetMapping("/api/user")
+    public ResponseEntity<UserDto> getCurrentUser(HttpServletRequest request) {
+        String token = request.getHeader("Authorization").replace("Bearer ", "");
+        String email = jwtService.extractUsername(token);
+        // Находим пользователя по email
+        UserDto userDto = userService.findUserByUsername(email);
+        // Возвращаем найденного пользователя
+        return ResponseEntity.ok(userDto);
     }
 }
