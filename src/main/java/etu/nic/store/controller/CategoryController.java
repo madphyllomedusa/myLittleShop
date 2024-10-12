@@ -52,5 +52,11 @@ public class CategoryController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}/children")
+    public ResponseEntity<List<CategoryDto>> getCategoryChildren(@PathVariable Long id) {
+        List<CategoryDto> children = categoryService.getCategoryChildren(id);
+        return ResponseEntity.ok(children);
+    }
+
 
 }

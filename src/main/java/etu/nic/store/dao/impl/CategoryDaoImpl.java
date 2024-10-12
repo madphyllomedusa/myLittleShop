@@ -113,6 +113,14 @@ public class CategoryDaoImpl implements CategoryDao {
         namedParameterJdbcTemplate.update(sql, params);
     }
 
+    @Override
+    public List<Category> findCategoryChildren(Long id) {
+        String sql = "SELECT * FROM categories WHERE parent_id = :parentId AND deleted_time IS NULL";
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue("parentId", id);
+        List<Category> categories = namedParameterJdbcTemplate.query(sql, params, this::mapRowToCategory);
+        return categories;
+    }
+
     private boolean hasProducts(Long categoryId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM product_category WHERE category_id = :categoryId)";
 
@@ -136,5 +144,7 @@ public class CategoryDaoImpl implements CategoryDao {
 
         return category;
     }
+
+
 
 }
