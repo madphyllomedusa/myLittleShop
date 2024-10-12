@@ -1,8 +1,8 @@
 package etu.nic.store.dao.impl;
 
 import etu.nic.store.dao.ProductDao;
-import etu.nic.store.model.entity.Category;
-import etu.nic.store.model.entity.Product;
+import etu.nic.store.model.pojo.Category;
+import etu.nic.store.model.pojo.Product;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -131,6 +131,18 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
+    public List<Product> getProductsByCategoryId(Long categoryId) {
+        String sql = "SELECT p.* " +
+                "FROM products p " +
+                "JOIN product_category pc ON p.id = pc.product_id " +
+                "WHERE pc.category_id = :categoryId";
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue("categoryId", categoryId);
+        List<Product> products = namedParameterJdbcTemplate.query(sql, params, this::mapRowToProduct);
+        return products;
+    }
+
+
+    @Override
     public void addCategoryToProduct(Long productId, Long categoryId) {
         String sql = "INSERT INTO product_category (product_id, category_id) VALUES (:productId, :categoryId)";
 
@@ -157,8 +169,8 @@ public class ProductDaoImpl implements ProductDao {
         Product product = new Product() {
         };
         product.setId(rs.getLong("id"));
-        product.setName(rs.getString("product_name"));
-        product.setDescription(rs.getString("product_description"));
+        product.setName(rs.getString("name"));
+        product.setDescription(rs.getString("description"));
         product.setPrice(rs.getBigDecimal("price"));
         Timestamp deletedTimestamp = rs.getTimestamp("deleted_time");
         product.setDeletedTime(deletedTimestamp != null ? deletedTimestamp.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime() : null);

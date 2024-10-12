@@ -1,4 +1,4 @@
-package etu.nic.store.model.entity;
+package etu.nic.store.model.pojo;
 
 import lombok.Data;
 

@@ -5,6 +5,7 @@ import etu.nic.store.model.dto.CategoryDto;
 import java.util.List;
 
 public interface CategoryService {
+    List<CategoryDto> getCategoryChildren(Long id);
     CategoryDto saveCategory(CategoryDto categoryDTO);
     CategoryDto findCategoryById(Long id);
     CategoryDto findCategoryByTitle(String title);

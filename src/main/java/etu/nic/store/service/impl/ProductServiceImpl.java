@@ -6,8 +6,8 @@ import etu.nic.store.exceptionhandler.BadRequestException;
 import etu.nic.store.exceptionhandler.InternalServerErrorException;
 import etu.nic.store.exceptionhandler.NotFoundException;
 import etu.nic.store.model.dto.ProductDto;
-import etu.nic.store.model.entity.Product;
-import etu.nic.store.model.entity.Category;
+import etu.nic.store.model.pojo.Product;
+import etu.nic.store.model.pojo.Category;
 import etu.nic.store.model.mappers.ProductMapper;
 import etu.nic.store.service.ProductService;
 import lombok.AllArgsConstructor;
@@ -127,5 +127,23 @@ public class ProductServiceImpl implements ProductService {
 
         productDAO.deleteById(id);
         logger.info("Product softly deleted with ID: {}", id);
+    }
+
+    @Override
+    public List<ProductDto> getProductsByCategoryId(Long categoryId) {
+        if (categoryId <= 0) {
+            logger.error("Invalid category ID: {}", categoryId);
+            throw new BadRequestException("Invalid category ID");
+        }
+
+        List<Product> products= productDAO.getProductsByCategoryId(categoryId);
+
+        if (products.isEmpty()) {
+            logger.warn("Product list is empty");
+            throw new NotFoundException("Product list is empty");
+        }
+        return products.stream()
+                .map(productMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }

@@ -1,12 +1,13 @@
 package etu.nic.store.service.impl;
 
+import etu.nic.store.dao.CategoryDao;
 import etu.nic.store.dao.impl.CategoryDaoImpl;
 import etu.nic.store.dao.impl.ProductDaoImpl;
 import etu.nic.store.exceptionhandler.BadRequestException;
 import etu.nic.store.exceptionhandler.NotFoundException;
 import etu.nic.store.model.dto.CategoryDto;
-import etu.nic.store.model.entity.Category;
-import etu.nic.store.model.entity.Product;
+import etu.nic.store.model.pojo.Category;
+import etu.nic.store.model.pojo.Product;
 import etu.nic.store.model.mappers.CategoryMapper;
 import etu.nic.store.service.CategoryService;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,24 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryDaoImpl categoryDAO;
     private final ProductDaoImpl productDAO;
     private final CategoryMapper categoryMapper;
+
+    @Override
+    public List<CategoryDto> getCategoryChildren(Long id) {
+        if (id <= 0) {
+            logger.error("Invalid category ID: {}", id);
+            throw new BadRequestException("Invalid category ID");
+        }
+
+        List<Category> categories= categoryDAO.findCategoryChildren(id);
+
+        if (categories.isEmpty()) {
+            logger.warn("Categories list is empty");
+            throw new NotFoundException("Categories list is empty");
+        }
+        return categories.stream()
+                .map(categoryMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional

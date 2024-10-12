@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")  // разрешаем запросы с фронтенда
 @RestController
 @RequestMapping("/categories")
 @AllArgsConstructor
@@ -50,6 +51,12 @@ public class CategoryController {
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/children")
+    public ResponseEntity<List<CategoryDto>> getCategoryChildren(@PathVariable Long id) {
+        List<CategoryDto> children = categoryService.getCategoryChildren(id);
+        return ResponseEntity.ok(children);
     }
 
 
