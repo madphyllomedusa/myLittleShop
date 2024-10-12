@@ -131,6 +131,18 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
+    public List<Product> getProductsByCategoryId(Long categoryId) {
+        String sql = "SELECT p.* " +
+                "FROM products p " +
+                "JOIN product_category pc ON p.id = pc.product_id " +
+                "WHERE pc.category_id = :categoryId";
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue("categoryId", categoryId);
+        List<Product> products = namedParameterJdbcTemplate.query(sql, params, this::mapRowToProduct);
+        return products;
+    }
+
+
+    @Override
     public void addCategoryToProduct(Long productId, Long categoryId) {
         String sql = "INSERT INTO product_category (product_id, category_id) VALUES (:productId, :categoryId)";
 

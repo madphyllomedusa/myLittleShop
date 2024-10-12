@@ -1,5 +1,6 @@
 package etu.nic.store.dao;
 
+import etu.nic.store.model.dto.ProductDto;
 import etu.nic.store.model.pojo.Product;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface ProductDao {
     Product save(Product product);
     Product update(Product product);
     void deleteById(Long id);
+    List<Product> getProductsByCategoryId(Long categoryId);
+
 }
