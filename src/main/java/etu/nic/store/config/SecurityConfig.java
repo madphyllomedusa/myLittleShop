@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
 
                         .requestMatchers("/bucket/**").permitAll()

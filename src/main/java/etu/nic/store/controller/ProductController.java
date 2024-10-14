@@ -3,8 +3,7 @@ package etu.nic.store.controller;
 import etu.nic.store.model.dto.ProductDto;
 import etu.nic.store.service.ProductService;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,6 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
-    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @GetMapping("/")
     public ResponseEntity<List<ProductDto>> findAllProducts() {
@@ -53,12 +51,16 @@ public class ProductController {
 
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ProductDto>> getProductsByCategoryId(@PathVariable Long categoryId) {
-        logger.info("Received request to fetch products for category: {}", categoryId);
         List<ProductDto> products = productService.getProductsByCategoryId(categoryId);
-        if (products.isEmpty()) {
-            logger.warn("No products found for category: {}", categoryId);
-        }
         return ResponseEntity.ok(products);
+    }
+
+    @PutMapping("/{id}/add-images")
+    public ResponseEntity<Void> addImagesToProduct(
+            @PathVariable Long id,
+            @RequestBody List<String> imageUrls) {
+        productService.addImageToProduct(id, imageUrls);
+        return ResponseEntity.ok().build();
     }
 
 }

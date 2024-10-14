@@ -11,4 +11,5 @@ public interface ProductService {
     ProductDto updateProduct(Long id, ProductDto productDTO);
     void deleteProduct(Long id);
     List<ProductDto> getProductsByCategoryId(Long categoryId);
+    void addImageToProduct(Long productId, List<String> imageUrls);
 }

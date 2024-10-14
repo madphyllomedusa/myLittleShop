@@ -15,6 +15,13 @@ CREATE TABLE IF NOT EXISTS products (
     deleted_time TIMESTAMP WITH TIME ZONE
 );
 
+CREATE TABLE IF NOT EXISTS product_images (
+    product_id BIGINT NOT NULL,
+    image_url TEXT NOT NULL,
+    PRIMARY KEY (product_id, image_url),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
 
 CREATE TABLE IF NOT EXISTS product_category (
     product_id BIGINT NOT NULL,

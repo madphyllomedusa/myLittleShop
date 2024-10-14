@@ -22,6 +22,7 @@ public class ProductMapper {
                 .map(Category::getId)
                 .collect(Collectors.toSet()));
         productDTO.setParameters(product.getParameters());
+        productDTO.setImageUrls(product.getImageUrls());
         return productDTO;
     }
 
@@ -33,6 +34,7 @@ public class ProductMapper {
         product.setPrice(productDTO.getPrice());
         product.setCategories(categories);
         product.setParameters(productDTO.getParameters());
+        product.setImageUrls(productDTO.getImageUrls());
         return product;
     }
 }

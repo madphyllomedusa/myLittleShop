@@ -81,6 +81,9 @@ public class ProductDaoImpl implements ProductDao {
             namedParameterJdbcTemplate.update(productParameterSql, productParameterParams);
         }
 
+        saveProductImages(product);
+
+
         return product;
     }
 
@@ -117,6 +120,10 @@ public class ProductDaoImpl implements ProductDao {
 
             namedParameterJdbcTemplate.update(productParameterSql, productParameterParams);
         }
+
+        if (product.getImageUrls() != null) {
+                addImageToProduct(product.getId(),product.getImageUrls());
+        }
         return product;
     }
 
@@ -135,10 +142,22 @@ public class ProductDaoImpl implements ProductDao {
         String sql = "SELECT p.* " +
                 "FROM products p " +
                 "JOIN product_category pc ON p.id = pc.product_id " +
-                "WHERE pc.category_id = :categoryId";
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("categoryId", categoryId);
-        List<Product> products = namedParameterJdbcTemplate.query(sql, params, this::mapRowToProduct);
-        return products;
+                "WHERE pc.category_id = :categoryId AND p.deleted_time IS NULL";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("categoryId", categoryId);
+        return namedParameterJdbcTemplate.query(sql, params, this::mapRowToProduct);
+    }
+
+
+    @Override
+    public void addImageToProduct(Long productId, List<String> imageUrls) {
+        String sql = "INSERT INTO product_images (product_id, image_url) VALUES (:productId, :imageUrl)";
+        for (String imgUrl : imageUrls) {
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("productId", productId)
+                    .addValue("imageUrl", imgUrl);
+            namedParameterJdbcTemplate.update(sql, params);
+        }
     }
 
 
@@ -181,7 +200,28 @@ public class ProductDaoImpl implements ProductDao {
         Map<String, String> parameters = getProductParametersByProductId(product.getId());
         product.setParameters(parameters);
 
+        List<String> imageUrls = getProductImages(product.getId());
+        product.setImageUrls(imageUrls);
+
         return product;
+    }
+
+    private void saveProductImages(Product product) {
+        if (product.getImageUrls() != null && !product.getImageUrls().isEmpty()) {
+            String sql = "INSERT INTO product_images (product_id, image_url) VALUES (:productId, :imageUrl)";
+            for (String imageUrl : product.getImageUrls()) {
+                MapSqlParameterSource params = new MapSqlParameterSource()
+                        .addValue("productId", product.getId())
+                        .addValue("imageUrl", imageUrl);
+                namedParameterJdbcTemplate.update(sql, params);
+            }
+        }
+    }
+
+    private List<String> getProductImages(Long productId) {
+        String sql = "SELECT image_url FROM product_images WHERE product_id = :productId";
+        MapSqlParameterSource params = new MapSqlParameterSource("productId", productId);
+        return namedParameterJdbcTemplate.queryForList(sql, params, String.class);
     }
 
     private Long getOrCreateParameterId(String parameterName) {

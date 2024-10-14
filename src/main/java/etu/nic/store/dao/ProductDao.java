@@ -16,5 +16,5 @@ public interface ProductDao {
     Product update(Product product);
     void deleteById(Long id);
     List<Product> getProductsByCategoryId(Long categoryId);
-
+    void addImageToProduct(Long productId, List<String> imageUrls);
 }
