@@ -16,9 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,8 +38,8 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> categories= categoryDAO.findCategoryChildren(id);
 
         if (categories.isEmpty()) {
-            logger.warn("Categories list is empty");
-            throw new NotFoundException("Categories list is empty");
+            logger.warn("Categories list is empty {}", id);
+            return Collections.emptyList();
         }
         return categories.stream()
                 .map(categoryMapper::toDTO)

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@CrossOrigin(origins = "http://localhost:5173")  // разрешаем запросы с фронтенда
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/products")
 @AllArgsConstructor
@@ -26,7 +26,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> findProductById(@PathVariable long id) {
+    public ResponseEntity<ProductDto> findProductById(@PathVariable Long id) {
         ProductDto product = productService.findProductById(id);
         return ResponseEntity.ok(product);
     }
@@ -56,9 +56,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}/add-images")
-    public ResponseEntity<Void> addImagesToProduct(
-            @PathVariable Long id,
-            @RequestBody List<String> imageUrls) {
+    public ResponseEntity<Void> addImagesToProduct(@PathVariable Long id, @RequestBody List<String> imageUrls) {
         productService.addImageToProduct(id, imageUrls);
         return ResponseEntity.ok().build();
     }
